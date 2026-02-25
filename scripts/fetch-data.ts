@@ -69,7 +69,7 @@ const accuracyRoundSchema = z.object({
 
 const accuracySchema = z.object({
   season: z.coerce.number().int(),
-  as_at_round: z.coerce.number().int().nonnegative(),
+  as_at_round: z.string().min(1),
   total_tips: z.coerce.number().int().nonnegative(),
   tips_correct: z.coerce.number().int().nonnegative(),
   accuracy_pct: z.coerce.number(),
@@ -193,9 +193,242 @@ const queries = {
      AND sm.rn = 1
     ORDER BY gp.season, gp.round, gp.date ASC
   `,
-  ladderPreseason: `SELECT team, position, wins, losses, draws, percentage FROM afl_site.ladder_preseason ORDER BY position ASC`,
-  ladderCurrent: `SELECT team, position, wins, losses, draws, percentage, predicted_final_wins, predicted_final_position FROM afl_site.ladder_current ORDER BY position ASC`,
-  accuracy: `SELECT season, as_at_round, total_tips, tips_correct, accuracy_pct, mae, bits, by_round_json FROM afl_site.accuracy LIMIT 1`,
+  ladderPreseason: (season: number) => `
+    WITH all_games AS (
+      SELECT
+        home_team AS team,
+        CASE WHEN predicted_margin > 0 THEN 1 ELSE 0 END AS won,
+        CASE WHEN predicted_margin < 0 THEN 1 ELSE 0 END AS lost,
+        CASE WHEN predicted_margin = 0 THEN 1 ELSE 0 END AS drew,
+        predicted_margin AS team_margin
+      FROM dev_afl.afl_tipping.predictions_preseason_snapshot
+      WHERE season = ${season}
+      UNION ALL
+      SELECT
+        away_team AS team,
+        CASE WHEN predicted_margin < 0 THEN 1 ELSE 0 END AS won,
+        CASE WHEN predicted_margin > 0 THEN 1 ELSE 0 END AS lost,
+        CASE WHEN predicted_margin = 0 THEN 1 ELSE 0 END AS drew,
+        -predicted_margin AS team_margin
+      FROM dev_afl.afl_tipping.predictions_preseason_snapshot
+      WHERE season = ${season}
+    ),
+    team_stats AS (
+      SELECT
+        team,
+        CAST(SUM(won) AS INT) AS wins,
+        CAST(SUM(lost) AS INT) AS losses,
+        CAST(SUM(drew) AS INT) AS draws,
+        CAST(SUM(won) * 4 + SUM(drew) * 2 AS INT) AS points,
+        ROUND(
+          (85.0 * COUNT(*) + SUM(team_margin) / 2.0) * 100.0
+            / NULLIF(85.0 * COUNT(*) - SUM(team_margin) / 2.0, 0),
+          1
+        ) AS percentage
+      FROM all_games
+      GROUP BY team
+    )
+    SELECT
+      CAST(RANK() OVER (ORDER BY points DESC, percentage DESC) AS INT) AS position,
+      team,
+      points,
+      wins,
+      losses,
+      draws,
+      percentage
+    FROM team_stats
+    ORDER BY position
+  `,
+  ladderCurrent: (season: number) => `
+    WITH actual_results AS (
+      SELECT
+        home_team AS team,
+        CASE WHEN margin > 0 THEN 1 ELSE 0 END AS won,
+        CASE WHEN margin < 0 THEN 1 ELSE 0 END AS lost,
+        CASE WHEN margin = 0 THEN 1 ELSE 0 END AS drew,
+        CAST(home_score AS DOUBLE) AS pts_for,
+        CAST(away_score AS DOUBLE) AS pts_against
+      FROM dev_afl.afl_tipping.silver_matches
+      WHERE season = ${season}
+      UNION ALL
+      SELECT
+        away_team AS team,
+        CASE WHEN margin < 0 THEN 1 ELSE 0 END AS won,
+        CASE WHEN margin > 0 THEN 1 ELSE 0 END AS lost,
+        CASE WHEN margin = 0 THEN 1 ELSE 0 END AS drew,
+        CAST(away_score AS DOUBLE) AS pts_for,
+        CAST(home_score AS DOUBLE) AS pts_against
+      FROM dev_afl.afl_tipping.silver_matches
+      WHERE season = ${season}
+    ),
+    actual_totals AS (
+      SELECT
+        team,
+        CAST(SUM(won) AS INT) AS wins,
+        CAST(SUM(lost) AS INT) AS losses,
+        CAST(SUM(drew) AS INT) AS draws,
+        CAST(SUM(won) * 4 + SUM(drew) * 2 AS INT) AS points,
+        ROUND(SUM(pts_for) * 100.0 / NULLIF(SUM(pts_against), 0), 1) AS percentage,
+        SUM(pts_for) AS total_pts_for,
+        SUM(pts_against) AS total_pts_against
+      FROM actual_results
+      GROUP BY team
+    ),
+    predicted_future AS (
+      SELECT
+        p.home_team AS team,
+        CASE WHEN p.predicted_margin > 0 THEN 1 ELSE 0 END AS predicted_win,
+        CASE WHEN p.predicted_margin = 0 THEN 1 ELSE 0 END AS predicted_draw,
+        p.predicted_margin AS team_margin
+      FROM dev_afl.afl_tipping.gold_predictions p
+      WHERE p.season = ${season}
+        AND NOT EXISTS (
+          SELECT 1
+          FROM dev_afl.afl_tipping.silver_matches m
+          WHERE m.season = p.season
+            AND m.date = p.date
+            AND m.home_team = p.home_team
+            AND m.away_team = p.away_team
+        )
+      UNION ALL
+      SELECT
+        p.away_team AS team,
+        CASE WHEN p.predicted_margin < 0 THEN 1 ELSE 0 END AS predicted_win,
+        CASE WHEN p.predicted_margin = 0 THEN 1 ELSE 0 END AS predicted_draw,
+        -p.predicted_margin AS team_margin
+      FROM dev_afl.afl_tipping.gold_predictions p
+      WHERE p.season = ${season}
+        AND NOT EXISTS (
+          SELECT 1
+          FROM dev_afl.afl_tipping.silver_matches m
+          WHERE m.season = p.season
+            AND m.date = p.date
+            AND m.home_team = p.home_team
+            AND m.away_team = p.away_team
+        )
+    ),
+    predicted_future_totals AS (
+      SELECT
+        team,
+        CAST(SUM(predicted_win) AS INT) AS predicted_future_wins,
+        CAST(SUM(predicted_draw) AS INT) AS predicted_future_draws,
+        CAST(SUM(predicted_win) * 4 + SUM(predicted_draw) * 2 AS INT) AS predicted_future_points,
+        SUM(85.0 + team_margin / 2.0) AS projected_pts_for,
+        SUM(85.0 - team_margin / 2.0) AS projected_pts_against
+      FROM predicted_future
+      GROUP BY team
+    ),
+    all_teams AS (
+      SELECT DISTINCT home_team AS team
+      FROM dev_afl.afl_tipping.gold_predictions
+      WHERE season = ${season}
+      UNION
+      SELECT DISTINCT away_team
+      FROM dev_afl.afl_tipping.gold_predictions
+      WHERE season = ${season}
+    ),
+    combined AS (
+      SELECT
+        t.team,
+        COALESCE(a.wins, 0) AS wins,
+        COALESCE(a.losses, 0) AS losses,
+        COALESCE(a.draws, 0) AS draws,
+        COALESCE(a.points, 0) AS points,
+        a.percentage,
+        COALESCE(a.wins, 0) + COALESCE(pf.predicted_future_wins, 0) AS predicted_final_wins,
+        COALESCE(a.points, 0) + COALESCE(pf.predicted_future_points, 0) AS predicted_final_points,
+        ROUND(
+          (COALESCE(a.total_pts_for, 0) + COALESCE(pf.projected_pts_for, 0)) * 100.0
+            / NULLIF(COALESCE(a.total_pts_against, 0) + COALESCE(pf.projected_pts_against, 0), 0),
+          1
+        ) AS projected_pct
+      FROM all_teams t
+      LEFT JOIN actual_totals a ON a.team = t.team
+      LEFT JOIN predicted_future_totals pf ON pf.team = t.team
+    )
+    SELECT
+      CAST(RANK() OVER (ORDER BY points DESC, COALESCE(percentage, 0) DESC) AS INT) AS position,
+      team,
+      points,
+      wins,
+      losses,
+      draws,
+      percentage,
+      predicted_final_wins,
+      predicted_final_points,
+      CAST(RANK() OVER (ORDER BY predicted_final_points DESC, projected_pct DESC) AS INT) AS predicted_final_position
+    FROM combined
+    ORDER BY position
+  `,
+  accuracy: (season: number) => `
+    WITH completed AS (
+      SELECT
+        p.round AS round_label,
+        CASE
+          WHEN p.round = 'Opening Round' THEN 0
+          WHEN p.round LIKE 'Round %' THEN CAST(SUBSTR(p.round, 7) AS INT)
+          ELSE 99
+        END AS round_order,
+        CAST(p.predicted_winner = m.winner AS INT) AS correct,
+        ABS(p.predicted_margin - m.margin) AS margin_error,
+        CASE
+          WHEN m.winner = m.home_team THEN LOG(2, GREATEST(p.home_win_probability, 1e-6))
+          WHEN m.winner = m.away_team THEN LOG(2, GREATEST(1.0 - p.home_win_probability, 1e-6))
+          ELSE 0.0
+        END AS bits_contribution
+      FROM dev_afl.afl_tipping.gold_predictions p
+      JOIN dev_afl.afl_tipping.silver_matches m
+        ON p.season = m.season
+       AND p.date = m.date
+       AND p.home_team = m.home_team
+       AND p.away_team = m.away_team
+      WHERE p.season = ${season}
+    ),
+    by_round AS (
+      SELECT
+        round_order,
+        round_label,
+        COUNT(*) AS tips,
+        CAST(SUM(correct) AS INT) AS correct,
+        ROUND(SUM(correct) * 100.0 / COUNT(*), 1) AS accuracy_pct,
+        ROUND(AVG(margin_error), 1) AS mae
+      FROM completed
+      GROUP BY round_order, round_label
+    ),
+    overall AS (
+      SELECT
+        COUNT(*) AS total_tips,
+        CAST(SUM(correct) AS INT) AS tips_correct,
+        ROUND(SUM(correct) * 100.0 / NULLIF(COUNT(*), 0), 1) AS accuracy_pct,
+        ROUND(AVG(margin_error), 1) AS mae,
+        ROUND(AVG(bits_contribution), 3) AS bits
+      FROM completed
+    )
+    SELECT
+      ${season} AS season,
+      (SELECT round_label FROM by_round ORDER BY round_order DESC LIMIT 1) AS as_at_round,
+      o.total_tips,
+      o.tips_correct,
+      o.accuracy_pct,
+      o.mae,
+      o.bits,
+      TO_JSON(
+        COLLECT_LIST(
+          STRUCT(
+            r.round_order AS round,
+            r.round_label,
+            r.tips,
+            r.correct,
+            r.accuracy_pct,
+            r.mae
+          )
+        )
+      ) AS by_round_json
+    FROM overall o
+    CROSS JOIN (SELECT * FROM by_round ORDER BY round_order) r
+    GROUP BY o.total_tips, o.tips_correct, o.accuracy_pct, o.mae, o.bits
+    LIMIT 1
+  `,
 };
 
 async function executeStatement(sql: string) {
@@ -261,9 +494,19 @@ function parseAccuracyRow(row: Record<string, unknown>) {
 
 async function main() {
   const rawPredictions = await executeStatement(queries.predictions);
-  const rawLadderPreseason = await executeStatement(queries.ladderPreseason);
-  const rawLadderCurrent = await executeStatement(queries.ladderCurrent);
-  const accuracyRows = await executeStatement(queries.accuracy);
+  const seasons = rawPredictions
+    .map((row) => Number(row.season))
+    .filter((season) => Number.isFinite(season));
+
+  if (seasons.length === 0) {
+    throw new Error("Predictions query returned no valid season values");
+  }
+
+  const targetSeason = Math.max(...seasons);
+
+  const rawLadderPreseason = await executeStatement(queries.ladderPreseason(targetSeason));
+  const rawLadderCurrent = await executeStatement(queries.ladderCurrent(targetSeason));
+  const accuracyRows = await executeStatement(queries.accuracy(targetSeason));
 
   if (accuracyRows.length === 0) {
     throw new Error("Accuracy query returned no rows");

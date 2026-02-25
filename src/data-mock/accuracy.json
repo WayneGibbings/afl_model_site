@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "as_at_round": 1,
+  "as_at_round": "Round 1",
   "total_tips": 5,
   "tips_correct": 3,
   "accuracy_pct": 60.0,

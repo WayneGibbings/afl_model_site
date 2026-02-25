@@ -39,7 +39,7 @@ export interface AccuracyByRound {
 
 export interface AccuracyData {
   season: number;
-  as_at_round: number;
+  as_at_round: string;
   total_tips: number;
   tips_correct: number;
   accuracy_pct: number;
