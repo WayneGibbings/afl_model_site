@@ -96,7 +96,103 @@ const baseHeaders = {
 };
 
 const queries = {
-  predictions: `SELECT season, round, round_label, date, venue, home_team, away_team, predicted_winner, predicted_margin, win_probability, actual_winner, actual_margin, tip_correct, margin_error FROM afl_site.predictions ORDER BY date ASC`,
+  predictions: `
+    WITH gp_base AS (
+      SELECT
+        season,
+        round AS round_label_raw,
+        date,
+        venue,
+        home_team,
+        away_team,
+        predicted_winner,
+        predicted_margin,
+        home_win_probability
+      FROM dev_afl.afl_tipping.gold_predictions
+    ),
+    round_order AS (
+      SELECT
+        season,
+        round_label_raw,
+        MIN(date) AS first_round_date
+      FROM gp_base
+      GROUP BY season, round_label_raw
+    ),
+    round_map AS (
+      SELECT
+        season,
+        round_label_raw,
+        DENSE_RANK() OVER (
+          PARTITION BY season
+          ORDER BY first_round_date ASC, round_label_raw ASC
+        ) AS round
+      FROM round_order
+    ),
+    gp AS (
+      SELECT
+        b.season,
+        m.round,
+        b.round_label_raw AS round_label,
+        b.date,
+        b.venue,
+        b.home_team,
+        b.away_team,
+        b.predicted_winner,
+        b.predicted_margin,
+        b.home_win_probability
+      FROM gp_base b
+      JOIN round_map m
+        ON b.season = m.season
+       AND b.round_label_raw = m.round_label_raw
+    ),
+    sm AS (
+      SELECT
+        season,
+        date,
+        home_team,
+        away_team,
+        winner,
+        abs_margin,
+        ROW_NUMBER() OVER (
+          PARTITION BY season, home_team, away_team, date
+          ORDER BY date DESC
+        ) AS rn
+      FROM dev_afl.afl_tipping.silver_matches
+    )
+    SELECT
+      gp.season,
+      gp.round,
+      gp.round_label,
+      gp.date,
+      gp.venue,
+      gp.home_team,
+      gp.away_team,
+      gp.predicted_winner,
+      CAST(gp.predicted_margin AS DOUBLE) AS predicted_margin,
+      CASE
+        WHEN gp.predicted_winner = gp.home_team THEN CAST(gp.home_win_probability AS DOUBLE)
+        WHEN gp.predicted_winner = gp.away_team THEN 1.0 - CAST(gp.home_win_probability AS DOUBLE)
+        ELSE NULL
+      END AS win_probability,
+      sm.winner AS actual_winner,
+      CAST(sm.abs_margin AS DOUBLE) AS actual_margin,
+      CASE
+        WHEN sm.winner IS NULL THEN NULL
+        ELSE gp.predicted_winner = sm.winner
+      END AS tip_correct,
+      CASE
+        WHEN sm.winner IS NULL OR sm.abs_margin IS NULL THEN NULL
+        ELSE ABS(CAST(gp.predicted_margin AS DOUBLE) - CAST(sm.abs_margin AS DOUBLE))
+      END AS margin_error
+    FROM gp
+    LEFT JOIN sm
+      ON gp.season = sm.season
+     AND gp.home_team = sm.home_team
+     AND gp.away_team = sm.away_team
+     AND gp.date = sm.date
+     AND sm.rn = 1
+    ORDER BY gp.season, gp.round, gp.date ASC
+  `,
   ladderPreseason: `SELECT team, position, wins, losses, draws, percentage FROM afl_site.ladder_preseason ORDER BY position ASC`,
   ladderCurrent: `SELECT team, position, wins, losses, draws, percentage, predicted_final_wins, predicted_final_position FROM afl_site.ladder_current ORDER BY position ASC`,
   accuracy: `SELECT season, as_at_round, total_tips, tips_correct, accuracy_pct, mae, bits, by_round_json FROM afl_site.accuracy LIMIT 1`,

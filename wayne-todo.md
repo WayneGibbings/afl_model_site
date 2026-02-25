@@ -1,8 +1,8 @@
 # Wayne TODO: Deploy AFL Model Site to Firebase Hosting (GCP)
 
 ## 1. Create and configure Firebase project
-- [ ] Create a Firebase project in Google Cloud/Firebase console.
-- [ ] Enable Firebase Hosting for the project.
+- [x] Create a Firebase project in Google Cloud/Firebase console.
+- [x] Enable Firebase Hosting for the project.
 - [ ] Decide whether to use default Firebase domain only, or connect a custom domain.
 
 ## 2. Prepare repository for Firebase deploy
@@ -11,7 +11,7 @@
 - [ ] Confirm workflow file is present: `.github/workflows/deploy.yml`.
 
 ## 3. Create service account credentials for CI
-- [ ] Run helper script (recommended):
+- [x] Run helper script (recommended):
   ```bash
   PROJECT_ID=<your-project-id> SA_NAME=github-actions-firebase-deploy CREATE_KEY=true ./infra/firebase-iam.sh
   ```
