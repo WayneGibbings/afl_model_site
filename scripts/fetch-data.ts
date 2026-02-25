@@ -508,10 +508,6 @@ async function main() {
   const rawLadderCurrent = await executeStatement(queries.ladderCurrent(targetSeason));
   const accuracyRows = await executeStatement(queries.accuracy(targetSeason));
 
-  if (accuracyRows.length === 0) {
-    throw new Error("Accuracy query returned no rows");
-  }
-
   const normalizedPredictions = rawPredictions.map((row) => ({
     ...row,
     home_team: mapTeamKey(row.home_team, "home_team"),
@@ -537,7 +533,23 @@ async function main() {
     .parse(normalizedLadderPreseason)
     .map((row) => ({ ...row, predicted_final_wins: undefined, predicted_final_position: undefined }));
   const ladderCurrent = z.array(ladderEntrySchema).parse(normalizedLadderCurrent);
-  const accuracy = parseAccuracyRow(accuracyRows[0]);
+  const accuracy =
+    accuracyRows.length > 0
+      ? parseAccuracyRow(accuracyRows[0])
+      : accuracySchema.parse({
+          season: targetSeason,
+          as_at_round: "Pre-season",
+          total_tips: 0,
+          tips_correct: 0,
+          accuracy_pct: 0,
+          mae: 0,
+          bits: 0,
+          by_round: [],
+        });
+
+  if (accuracyRows.length === 0) {
+    console.warn("Accuracy query returned no rows. Writing pre-season default accuracy payload.");
+  }
 
   const outputDir = path.join(process.cwd(), "src/data");
   await mkdir(outputDir, { recursive: true });
