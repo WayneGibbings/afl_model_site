@@ -22,14 +22,14 @@ export function LadderView({ preseasonRows, currentRows, seasonStarted }: Ladder
           className={`rounded-md px-4 py-2 text-sm ${mode === "preseason" ? "bg-blue-600 text-white" : "text-slate-700"}`}
           onClick={() => setMode("preseason")}
         >
-          Pre-season
+          Pre-season Forecast
         </button>
         <button
           type="button"
           className={`rounded-md px-4 py-2 text-sm ${mode === "current" ? "bg-blue-600 text-white" : "text-slate-700"}`}
           onClick={() => setMode("current")}
         >
-          Current
+          Current Projection
         </button>
       </div>
       <LadderTable rows={rows} mode={mode} />

@@ -17,15 +17,15 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
             <th className="px-4 py-3 text-left font-semibold">Team</th>
             {mode === "preseason" ? (
               <>
-                <th className="px-4 py-3 text-right font-semibold">Predicted Wins</th>
-                <th className="px-4 py-3 text-right font-semibold">Predicted %</th>
+                <th className="px-4 py-3 text-right font-semibold">Forecast Wins</th>
+                <th className="px-4 py-3 text-right font-semibold">Forecast %</th>
               </>
             ) : (
               <>
                 <th className="px-4 py-3 text-right font-semibold">Current W-L-D</th>
                 <th className="px-4 py-3 text-right font-semibold">Current %</th>
-                <th className="px-4 py-3 text-right font-semibold">Predicted Final Wins</th>
-                <th className="px-4 py-3 text-right font-semibold">Predicted Final Pos</th>
+                <th className="px-4 py-3 text-right font-semibold">Projected Final Wins</th>
+                <th className="px-4 py-3 text-right font-semibold">Projected Final Pos</th>
               </>
             )}
           </tr>
