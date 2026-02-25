@@ -1,0 +1,19 @@
+{
+  "season": 2026,
+  "as_at_round": 1,
+  "total_tips": 5,
+  "tips_correct": 3,
+  "accuracy_pct": 60.0,
+  "mae": 10.1,
+  "bits": 3.4,
+  "by_round": [
+    {
+      "round": 1,
+      "round_label": "Round 1",
+      "tips": 5,
+      "correct": 3,
+      "accuracy_pct": 60.0,
+      "mae": 10.1
+    }
+  ]
+}

@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AFL Predictions Site
 
-## Getting Started
+Static AFL predictions website built with Next.js App Router and Tailwind.
+The app loads live build data from `src/data/` when present, and falls back to committed development fixtures in `src/data-mock/`.
 
-First, run the development server:
+## Local development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `npm run dev` - run development server.
+- `npm run build` - build static export to `out/`.
+- `npm run typecheck` - run TypeScript checks.
+- `npm run test` - run utility tests.
+- `npm run fetch:data` - fetch Databricks data into `src/data/`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Required environment variables for data fetch
 
-## Learn More
+- `DATABRICKS_HOST`
+- `DATABRICKS_TOKEN`
+- `DATABRICKS_HTTP_PATH` (preferred, for example `/sql/1.0/warehouses/28dd09c7df5b6d65`)
 
-To learn more about Next.js, take a look at the following resources:
+Example host:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `DATABRICKS_HOST=dbc-11025f47-daa6.cloud.databricks.com`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+GitHub Actions workflow in `.github/workflows/deploy.yml` builds and deploys `out/` to Firebase Hosting.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Firebase setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Create a Firebase project and enable Hosting.
+2. Add repository Actions secrets:
+   - `FIREBASE_PROJECT_ID`
+   - `FIREBASE_SERVICE_ACCOUNT` (raw JSON service-account key with Hosting deploy permissions)
+   - `DATABRICKS_HOST`
+   - `DATABRICKS_TOKEN`
+   - `DATABRICKS_HTTP_PATH`
+3. Push to `main` or run the workflow manually.
+
+### Firebase IAM (least-privilege baseline)
+
+For a manually created deploy service account, start with:
+- `roles/firebasehosting.admin`
+- `roles/serviceusage.apiKeysViewer`
+
+`roles/serviceusage.apiKeysViewer` is required by Firebase CLI-based deploy flows.
+
+Example:
+
+```bash
+gcloud projects add-iam-policy-binding <PROJECT_ID> \
+  --member="serviceAccount:<SA_NAME>@<PROJECT_ID>.iam.gserviceaccount.com" \
+  --role="roles/firebasehosting.admin"
+
+gcloud projects add-iam-policy-binding <PROJECT_ID> \
+  --member="serviceAccount:<SA_NAME>@<PROJECT_ID>.iam.gserviceaccount.com" \
+  --role="roles/serviceusage.apiKeysViewer"
+```
+
+Or use the helper script in this repo:
+
+```bash
+PROJECT_ID=<PROJECT_ID> SA_NAME=github-actions-firebase-deploy ./infra/firebase-iam.sh
+```
+
+Generate a key file in the same step:
+
+```bash
+PROJECT_ID=<PROJECT_ID> SA_NAME=github-actions-firebase-deploy CREATE_KEY=true ./infra/firebase-iam.sh
+```

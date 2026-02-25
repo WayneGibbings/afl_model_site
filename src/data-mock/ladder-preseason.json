@@ -1,0 +1,20 @@
+[
+  { "team": "brisbane", "position": 1, "wins": 16.7, "losses": 6.3, "draws": 0, "percentage": 122.8 },
+  { "team": "collingwood", "position": 2, "wins": 16.2, "losses": 6.8, "draws": 0, "percentage": 118.9 },
+  { "team": "melbourne", "position": 3, "wins": 15.9, "losses": 7.1, "draws": 0, "percentage": 116.5 },
+  { "team": "carlton", "position": 4, "wins": 15.3, "losses": 7.7, "draws": 0, "percentage": 112.7 },
+  { "team": "sydney", "position": 5, "wins": 14.9, "losses": 8.1, "draws": 0, "percentage": 111.4 },
+  { "team": "geelong", "position": 6, "wins": 14.2, "losses": 8.8, "draws": 0, "percentage": 108.2 },
+  { "team": "portadelaide", "position": 7, "wins": 13.9, "losses": 9.1, "draws": 0, "percentage": 106.9 },
+  { "team": "fremantle", "position": 8, "wins": 13.6, "losses": 9.4, "draws": 0, "percentage": 104.8 },
+  { "team": "bulldogs", "position": 9, "wins": 12.8, "losses": 10.2, "draws": 0, "percentage": 102.7 },
+  { "team": "adelaide", "position": 10, "wins": 12.2, "losses": 10.8, "draws": 0, "percentage": 101.3 },
+  { "team": "gws", "position": 11, "wins": 11.9, "losses": 11.1, "draws": 0, "percentage": 100.5 },
+  { "team": "essendon", "position": 12, "wins": 11.2, "losses": 11.8, "draws": 0, "percentage": 98.8 },
+  { "team": "hawthorn", "position": 13, "wins": 10.9, "losses": 12.1, "draws": 0, "percentage": 97.6 },
+  { "team": "stkilda", "position": 14, "wins": 10.1, "losses": 12.9, "draws": 0, "percentage": 96.9 },
+  { "team": "goldcoast", "position": 15, "wins": 9.4, "losses": 13.6, "draws": 0, "percentage": 94.4 },
+  { "team": "richmond", "position": 16, "wins": 7.5, "losses": 15.5, "draws": 0, "percentage": 89.5 },
+  { "team": "westcoast", "position": 17, "wins": 6.9, "losses": 16.1, "draws": 0, "percentage": 86.4 },
+  { "team": "northmelbourne", "position": 18, "wins": 6.2, "losses": 16.8, "draws": 0, "percentage": 84.2 }
+]
