@@ -224,7 +224,7 @@ const queries = {
       gp.home_team,
       gp.away_team,
       gp.predicted_winner,
-      CAST(gp.predicted_margin AS DOUBLE) AS predicted_margin,
+      ABS(CAST(gp.predicted_margin AS DOUBLE)) AS predicted_margin,
       CASE
         WHEN gp.predicted_winner = gp.home_team THEN CAST(gp.home_win_probability AS DOUBLE)
         WHEN gp.predicted_winner = gp.away_team THEN 1.0 - CAST(gp.home_win_probability AS DOUBLE)
@@ -238,7 +238,7 @@ const queries = {
       END AS tip_correct,
       CASE
         WHEN sm.winner IS NULL OR sm.abs_margin IS NULL THEN NULL
-        ELSE ABS(CAST(gp.predicted_margin AS DOUBLE) - CAST(sm.abs_margin AS DOUBLE))
+        ELSE ABS(ABS(CAST(gp.predicted_margin AS DOUBLE)) - CAST(sm.abs_margin AS DOUBLE))
       END AS margin_error
     FROM gp
     LEFT JOIN sm
