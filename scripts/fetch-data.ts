@@ -79,28 +79,59 @@ const accuracySchema = z.object({
 });
 
 function normalisePredictionDate(value: unknown): string {
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    // Support unix epoch values (seconds or milliseconds).
+    const millis = value > 1_000_000_000_000 ? value : value * 1000;
+    return new Date(millis).toISOString();
+  }
+
   if (typeof value !== "string") {
-    return String(value ?? "");
+    throw new Error(`Invalid prediction date type: ${typeof value}`);
   }
 
   const trimmed = value.trim();
+  if (!trimmed) {
+    throw new Error("Invalid prediction date: empty string");
+  }
+
+  // Remove trailing timezone abbreviations often returned by SQL engines (e.g. " UTC").
+  let normalised = trimmed.replace(/\s+[A-Za-z]{3,4}$/, "");
 
   // Convert "YYYY-MM-DD HH:mm:ss(.sss)" to ISO form.
-  const withT = trimmed.includes(" ") ? trimmed.replace(" ", "T") : trimmed;
+  normalised = normalised.replace(/^(\d{4}-\d{2}-\d{2})\s+/, "$1T");
+
+  // Convert date-only values to midnight UTC.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalised)) {
+    normalised = `${normalised}T00:00:00Z`;
+  }
 
   // Normalise compact offsets like +1000 -> +10:00.
-  if (/[+-]\d{4}$/.test(withT)) {
-    return withT.replace(/([+-]\d{2})(\d{2})$/, "$1:$2");
+  if (/[+-]\d{4}$/.test(normalised)) {
+    normalised = normalised.replace(/([+-]\d{2})(\d{2})$/, "$1:$2");
   }
 
   // Normalise short offsets like +10 -> +10:00.
-  if (/[+-]\d{2}$/.test(withT)) {
-    return `${withT}:00`;
+  if (/[+-]\d{2}$/.test(normalised)) {
+    normalised = `${normalised}:00`;
   }
 
   // If no timezone is present, treat Databricks timestamp as UTC.
-  const hasTimezone = /(?:Z|[+-]\d{2}:\d{2})$/.test(withT);
-  return hasTimezone ? withT : `${withT}Z`;
+  const hasTimezone = /(?:Z|[+-]\d{2}:\d{2})$/.test(normalised);
+  if (!hasTimezone) {
+    normalised = `${normalised}Z`;
+  }
+
+  const parsed = new Date(normalised);
+  if (Number.isNaN(parsed.getTime())) {
+    throw new Error(`Invalid prediction date value: "${value}"`);
+  }
+
+  // Persist canonical ISO format so app-side date handling is consistent.
+  return parsed.toISOString();
 }
 
 const host = process.env.DATABRICKS_HOST;
@@ -548,7 +579,21 @@ async function main() {
     actual_winner: mapTeamKey(row.actual_winner, "actual_winner", true),
   }));
 
-  const predictions = z.array(predictionSchema).parse(normalizedPredictions);
+  let predictions;
+  try {
+    predictions = z.array(predictionSchema).parse(normalizedPredictions);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const dateIssue = error.issues.find((issue) => issue.path[1] === "date");
+      if (dateIssue && typeof dateIssue.path[0] === "number") {
+        const idx = dateIssue.path[0];
+        const rawDate = rawPredictions[idx]?.date;
+        const normalisedDate = normalizedPredictions[idx]?.date;
+        console.error(`Invalid prediction date at row ${idx}: raw=${String(rawDate)} normalised=${String(normalisedDate)}`);
+      }
+    }
+    throw error;
+  }
 
   const normalizedLadderPreseason = rawLadderPreseason.map((row) => ({
     ...row,
