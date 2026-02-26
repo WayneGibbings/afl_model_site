@@ -9,8 +9,9 @@ export default async function LadderPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Predicted Ladder</h1>
+      <header className="page-header">
+        <h1 className="page-title">Predicted Ladder</h1>
+        <p className="text-slate-500 mt-1 text-sm">Model projections for final season standings</p>
       </header>
       <LadderView preseasonRows={preseasonRows} currentRows={currentRows} seasonStarted={seasonStarted} />
     </div>

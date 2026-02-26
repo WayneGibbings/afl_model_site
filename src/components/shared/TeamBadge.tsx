@@ -9,7 +9,7 @@ interface TeamBadgeProps {
 
 const iconSizes = {
   sm: 20,
-  md: 28,
+  md: 26,
 };
 
 export function TeamBadge({ team, size = "sm", showFullName = false }: TeamBadgeProps) {
@@ -20,12 +20,14 @@ export function TeamBadge({ team, size = "sm", showFullName = false }: TeamBadge
   return (
     <span className="inline-flex items-center gap-2">
       <span
-        className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm"
-        style={{ width: iconSize + 8, height: iconSize + 8 }}
+        className="inline-flex shrink-0 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-slate-200"
+        style={{ width: iconSize + 10, height: iconSize + 10 }}
       >
         <Image src={teamInfo.icon} alt={`${teamInfo.name} logo`} width={iconSize} height={iconSize} />
       </span>
-      <span className="font-semibold tracking-wide text-slate-800">{name}</span>
+      <span className={`font-semibold tracking-wide text-slate-800 ${size === "md" ? "text-sm" : "text-xs"}`}>
+        {name}
+      </span>
     </span>
   );
 }

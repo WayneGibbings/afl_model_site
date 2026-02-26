@@ -15,23 +15,26 @@ export function LadderView({ preseasonRows, currentRows, seasonStarted }: Ladder
   const rows = useMemo(() => (mode === "preseason" ? preseasonRows : currentRows), [currentRows, mode, preseasonRows]);
 
   return (
-    <section className="space-y-4">
-      <div className="inline-flex rounded-lg border border-slate-300 bg-white p-1">
-        <button
-          type="button"
-          className={`rounded-md px-4 py-2 text-sm ${mode === "preseason" ? "bg-blue-600 text-white" : "text-slate-700"}`}
-          onClick={() => setMode("preseason")}
-        >
-          Pre-season Forecast
-        </button>
-        <button
-          type="button"
-          className={`rounded-md px-4 py-2 text-sm ${mode === "current" ? "bg-blue-600 text-white" : "text-slate-700"}`}
-          onClick={() => setMode("current")}
-        >
-          Current Projection
-        </button>
+    <section className="space-y-5">
+      {/* Segmented control */}
+      <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+        {(["preseason", "current"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            className={`rounded-lg px-5 py-2 text-sm font-medium transition-all ${
+              mode === m
+                ? "shadow-sm text-white"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+            style={mode === m ? { background: "var(--accent)" } : {}}
+            onClick={() => setMode(m)}
+          >
+            {m === "preseason" ? "Pre-season Forecast" : "Current Projection"}
+          </button>
+        ))}
       </div>
+
       <LadderTable rows={rows} mode={mode} />
     </section>
   );

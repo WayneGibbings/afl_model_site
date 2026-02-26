@@ -5,48 +5,81 @@ export default async function AccuracyPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Accuracy</h1>
+      <header className="page-header">
+        <h1 className="page-title">Accuracy</h1>
+        <p className="text-slate-500 mt-1 text-sm">Season-to-date model performance metrics</p>
       </header>
+
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Tips Correct" value={`${data.tips_correct} / ${data.total_tips}`} />
-        <StatCard label="Accuracy" value={`${data.accuracy_pct.toFixed(1)}%`} />
-        <StatCard label="MAE" value={data.mae.toFixed(1)} />
-        <StatCard label="Bits" value={data.bits.toFixed(1)} />
+        <StatCard label="Tips Correct" value={`${data.tips_correct} / ${data.total_tips}`} accent="blue" icon="🎯" />
+        <StatCard label="Accuracy" value={`${data.accuracy_pct.toFixed(1)}%`} accent="green" icon="✓" />
+        <StatCard label="MAE" value={data.mae.toFixed(1)} accent="amber" icon="±" />
+        <StatCard label="Bits" value={data.bits.toFixed(1)} accent="purple" icon="◈" />
       </section>
-      <section className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
-        <table className="min-w-full text-sm">
-          <thead className="bg-slate-100 text-slate-700">
+
+      <div className="card overflow-x-auto">
+        <table className="data-table">
+          <thead>
             <tr>
-              <th className="px-4 py-3 text-left font-semibold">Round</th>
-              <th className="px-4 py-3 text-right font-semibold">Tips</th>
-              <th className="px-4 py-3 text-right font-semibold">Correct</th>
-              <th className="px-4 py-3 text-right font-semibold">Accuracy</th>
-              <th className="px-4 py-3 text-right font-semibold">MAE</th>
+              <th className="px-4 py-3 text-left">Round</th>
+              <th className="px-4 py-3 text-right">Tips</th>
+              <th className="px-4 py-3 text-right">Correct</th>
+              <th className="px-4 py-3 text-right">Accuracy</th>
+              <th className="px-4 py-3 text-right">MAE</th>
             </tr>
           </thead>
           <tbody>
             {data.by_round.map((round) => (
-              <tr key={round.round_label} className="border-t border-slate-200">
-                <td className="px-4 py-3">{round.round_label}</td>
-                <td className="px-4 py-3 text-right">{round.tips}</td>
-                <td className="px-4 py-3 text-right">{round.correct}</td>
-                <td className="px-4 py-3 text-right">{round.accuracy_pct.toFixed(1)}%</td>
-                <td className="px-4 py-3 text-right">{round.mae.toFixed(1)}</td>
+              <tr key={round.round_label}>
+                <td className="px-4 py-3 font-medium">{round.round_label}</td>
+                <td className="px-4 py-3 text-right font-mono text-slate-600">{round.tips}</td>
+                <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">{round.correct}</td>
+                <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">
+                  {round.accuracy_pct.toFixed(1)}%
+                </td>
+                <td className="px-4 py-3 text-right font-mono text-slate-600">{round.mae.toFixed(1)}</td>
               </tr>
             ))}
           </tbody>
         </table>
-      </section>
+      </div>
     </div>
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+const accentMap = {
+  blue: { bar: "#1d4ed8", badge: "#eff6ff" },
+  green: { bar: "#16a34a", badge: "#f0fdf4" },
+  amber: { bar: "#d97706", badge: "#fffbeb" },
+  purple: { bar: "#7c3aed", badge: "#f5f3ff" },
+};
+
+function StatCard({
+  label,
+  value,
+  accent,
+  icon,
+}: {
+  label: string;
+  value: string;
+  accent: keyof typeof accentMap;
+  icon: string;
+}) {
+  const colors = accentMap[accent];
   return (
-    <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="text-xl font-semibold text-slate-900">{value}</p>
+    <div className="card relative overflow-hidden px-5 py-4" style={{ borderTop: `3px solid ${colors.bar}` }}>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">{label}</p>
+          <p className="text-2xl font-extrabold tracking-tight text-slate-900">{value}</p>
+        </div>
+        <span
+          className="text-lg w-9 h-9 rounded-lg flex items-center justify-center font-bold"
+          style={{ background: colors.badge, color: colors.bar }}
+        >
+          {icon}
+        </span>
+      </div>
     </div>
   );
 }
