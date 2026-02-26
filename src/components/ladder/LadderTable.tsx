@@ -108,7 +108,7 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
       {/* Legend */}
       <div className="px-4 py-3 border-t flex flex-wrap items-center gap-4" style={{ borderColor: "var(--border)" }}>
         <LegendItem color="var(--brand)" label="Top 6 — Direct finals" />
-        <LegendItem color="var(--gold)" label="7–10 — Playoff round" />
+        <LegendItem color="var(--gold)" label="7–10 — Wildcard round" />
         <LegendItem color="var(--border)" label="11–18 — Eliminated" />
       </div>
     </div>

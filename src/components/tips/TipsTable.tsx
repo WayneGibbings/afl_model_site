@@ -67,7 +67,6 @@ export function TipsTable({ predictions }: TipsTableProps) {
             key={`${prediction.round}-${prediction.home_team}-${prediction.away_team}`}
             prediction={prediction}
             browserTimeZone={browserTimeZone}
-            index={i}
           />
         ))}
       </div>
@@ -80,21 +79,16 @@ export function TipsTable({ predictions }: TipsTableProps) {
 function MatchCard({
   prediction,
   browserTimeZone,
-  index,
 }: {
   prediction: UpcomingPrediction;
   browserTimeZone: string | null;
-  index: number;
 }) {
   const isHomeTip = prediction.predicted_winner === prediction.home_team;
   const winProb = isHomeTip ? prediction.home_win_probability : prediction.away_win_probability;
   const winPct = Math.round(winProb * 100);
 
   return (
-    <div
-      className="match-card card overflow-hidden"
-      style={{ animationDelay: `${index * 50}ms` }}
-    >
+    <div className="match-card card overflow-clip">
       {/* Date / Venue header */}
       <div
         className="px-4 py-2.5 flex items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-wider border-b"
@@ -104,13 +98,16 @@ function MatchCard({
           borderColor: "var(--border)",
         }}
       >
-        <span>{browserTimeZone ? formatPredictionDate(prediction, browserTimeZone) : "\u00A0"}</span>
+        <span className="shrink-0">{browserTimeZone ? formatPredictionDate(prediction, browserTimeZone) : "\u00A0"}</span>
         <span className="truncate text-right opacity-70">{prediction.venue}</span>
       </div>
 
-      {/* Matchup */}
+      {/* Matchup — CSS Grid for predictable sizing */}
       <div className="px-4 py-4 sm:py-5">
-        <div className="flex items-center gap-3">
+        <div
+          className="items-center gap-3"
+          style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr" }}
+        >
           {/* Home team */}
           <TeamSide
             team={prediction.home_team}
@@ -119,14 +116,12 @@ function MatchCard({
           />
 
           {/* VS divider */}
-          <div className="flex flex-col items-center gap-1 shrink-0 px-1">
-            <span
-              className="text-[10px] font-bold tracking-widest"
-              style={{ color: "var(--muted)", opacity: 0.5 }}
-            >
-              VS
-            </span>
-          </div>
+          <span
+            className="text-[10px] font-bold tracking-widest text-center"
+            style={{ color: "var(--muted)", opacity: 0.5 }}
+          >
+            VS
+          </span>
 
           {/* Away team */}
           <TeamSide
@@ -206,48 +201,46 @@ function TeamSide({
 }) {
   const info = teams[team];
   return (
-    <div className="flex-1 min-w-0">
-      <div
-        className="flex flex-col items-center gap-2 rounded-xl px-2 py-3 transition-all"
-        style={
-          isTipped
-            ? {
-                background: "rgba(26, 122, 138, 0.06)",
-                boxShadow: "inset 0 0 0 1.5px rgba(26, 122, 138, 0.15)",
-              }
-            : {}
-        }
+    <div
+      className="flex flex-col items-center gap-2 rounded-xl px-2 py-3 min-w-0"
+      style={
+        isTipped
+          ? {
+              background: "rgba(26, 122, 138, 0.06)",
+              boxShadow: "inset 0 0 0 1.5px rgba(26, 122, 138, 0.15)",
+            }
+          : {}
+      }
+    >
+      {/* Team icon */}
+      <span
+        className="inline-flex shrink-0 items-center justify-center rounded-full bg-white"
+        style={{
+          width: 44,
+          height: 44,
+          boxShadow: isTipped
+            ? "0 2px 8px rgba(26, 122, 138, 0.2), 0 0 0 2px rgba(26, 122, 138, 0.1)"
+            : "0 1px 3px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)",
+        }}
       >
-        {/* Team icon */}
-        <span
-          className="inline-flex items-center justify-center rounded-full bg-white shadow-sm"
-          style={{
-            width: 44,
-            height: 44,
-            boxShadow: isTipped
-              ? "0 2px 8px rgba(26, 122, 138, 0.2), 0 0 0 2px rgba(26, 122, 138, 0.1)"
-              : "0 1px 3px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)",
-          }}
-        >
-          <Image src={info.icon} alt={`${info.name} logo`} width={28} height={28} />
-        </span>
+        <Image src={info.icon} alt={`${info.name} logo`} width={28} height={28} />
+      </span>
 
-        {/* Team name */}
-        <span
-          className="text-xs font-bold text-center leading-tight truncate w-full"
-          style={{ color: isTipped ? "var(--brand-dark)" : "var(--foreground)" }}
-        >
-          {info.short}
-        </span>
+      {/* Team name */}
+      <span
+        className="text-xs font-bold text-center leading-tight truncate max-w-full"
+        style={{ color: isTipped ? "var(--brand-dark)" : "var(--foreground)" }}
+      >
+        {info.short}
+      </span>
 
-        {/* Home / Away label */}
-        <span
-          className="text-[9px] font-semibold uppercase tracking-widest"
-          style={{ color: "var(--muted)", opacity: 0.6 }}
-        >
-          {label}
-        </span>
-      </div>
+      {/* Home / Away label */}
+      <span
+        className="text-[9px] font-semibold uppercase tracking-widest"
+        style={{ color: "var(--muted)", opacity: 0.6 }}
+      >
+        {label}
+      </span>
     </div>
   );
 }
