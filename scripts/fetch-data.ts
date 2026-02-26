@@ -143,7 +143,7 @@ const queries = {
             AND  m.home_team = p.home_team
             AND  m.away_team = p.away_team
         )
-    ),
+    )
     SELECT
       u.round,
       u.date,
