@@ -22,7 +22,7 @@ export function LadderView({ preseasonRows, currentRows, seasonStarted }: Ladder
           <button
             key={m}
             type="button"
-            className={`rounded-lg px-5 py-2 text-sm font-medium transition-all ${
+            className={`rounded-lg px-3 py-2 sm:px-5 text-sm font-medium transition-all ${
               mode === m
                 ? "shadow-sm text-white"
                 : "text-slate-600 hover:text-slate-900"
@@ -30,7 +30,8 @@ export function LadderView({ preseasonRows, currentRows, seasonStarted }: Ladder
             style={mode === m ? { background: "var(--accent)" } : {}}
             onClick={() => setMode(m)}
           >
-            {m === "preseason" ? "Pre-season Forecast" : "Current Projection"}
+            <span className="sm:hidden">{m === "preseason" ? "Pre-season" : "Current"}</span>
+            <span className="hidden sm:inline">{m === "preseason" ? "Pre-season Forecast" : "Current Projection"}</span>
           </button>
         ))}
       </div>

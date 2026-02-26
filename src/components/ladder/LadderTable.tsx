@@ -30,15 +30,21 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
             <th className="px-4 py-3 text-left">Team</th>
             {mode === "preseason" ? (
               <>
-                <th className="px-4 py-3 text-right">Forecast Wins</th>
-                <th className="px-4 py-3 text-right">Forecast %</th>
+                <th className="px-4 py-3 text-right">
+                  <span className="sm:hidden">Wins</span>
+                  <span className="hidden sm:inline">Forecast Wins</span>
+                </th>
+                <th className="px-4 py-3 text-right">%</th>
               </>
             ) : (
               <>
                 <th className="px-4 py-3 text-right">W-L-D</th>
                 <th className="px-4 py-3 text-right">%</th>
-                <th className="px-4 py-3 text-right">Proj. Wins</th>
-                <th className="px-4 py-3 text-right">Proj. Pos</th>
+                <th className="px-4 py-3 text-right">
+                  <span className="sm:hidden">Wins</span>
+                  <span className="hidden sm:inline">Proj. Wins</span>
+                </th>
+                <th className="hidden sm:table-cell px-4 py-3 text-right">Proj. Pos</th>
               </>
             )}
           </tr>
@@ -61,7 +67,12 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  <TeamBadge team={row.team} size="md" showFullName />
+                  <span className="sm:hidden">
+                    <TeamBadge team={row.team} size="sm" />
+                  </span>
+                  <span className="hidden sm:inline-flex">
+                    <TeamBadge team={row.team} size="md" showFullName />
+                  </span>
                 </td>
                 {mode === "preseason" ? (
                   <>
@@ -83,7 +94,7 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
                     <td className="px-4 py-3 text-right font-mono font-semibold text-slate-700">
                       {row.predicted_final_wins != null ? row.predicted_final_wins : "—"}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-600">
+                    <td className="hidden sm:table-cell px-4 py-3 text-right font-mono text-slate-600">
                       {row.predicted_final_position ?? "—"}
                     </td>
                   </>

@@ -10,7 +10,7 @@ export default async function AccuracyPage() {
         <p className="text-slate-500 mt-1 text-sm">Season-to-date model performance metrics</p>
       </header>
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Tips Correct" value={`${data.tips_correct} / ${data.total_tips}`} accent="blue" icon="🎯" />
         <StatCard label="Accuracy" value={`${data.accuracy_pct.toFixed(1)}%`} accent="green" icon="✓" />
         <StatCard label="MAE" value={data.mae.toFixed(1)} accent="amber" icon="±" />
@@ -67,11 +67,11 @@ function StatCard({
 }) {
   const colors = accentMap[accent];
   return (
-    <div className="card relative overflow-hidden px-5 py-4" style={{ borderTop: `3px solid ${colors.bar}` }}>
+    <div className="card relative overflow-hidden px-3 py-3 sm:px-5 sm:py-4" style={{ borderTop: `3px solid ${colors.bar}` }}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">{label}</p>
-          <p className="text-2xl font-extrabold tracking-tight text-slate-900">{value}</p>
+          <p className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">{value}</p>
         </div>
         <span
           className="text-lg w-9 h-9 rounded-lg flex items-center justify-center font-bold"

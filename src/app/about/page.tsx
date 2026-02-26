@@ -17,7 +17,7 @@ export default async function AboutPage() {
         <p className="text-slate-500 mt-1 text-sm">About the Waynealytics AFL prediction model</p>
       </header>
       <article
-        className="about-prose card prose max-w-3xl p-8
+        className="about-prose card prose max-w-3xl p-4 sm:p-8
           prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:text-slate-900
           prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3
           prose-p:text-slate-600 prose-p:leading-relaxed

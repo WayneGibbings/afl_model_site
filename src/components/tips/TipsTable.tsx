@@ -126,7 +126,8 @@ export function TipsTable({ predictions }: TipsTableProps) {
                     <TeamBadge team={prediction.predicted_winner} size="sm" />
                   </td>
                   <td className="px-4 py-3 text-right font-mono text-sm font-semibold text-slate-700">
-                    {formatMarginPoints(prediction.predicted_margin)}
+                    <span className="hidden sm:inline">{formatMarginPoints(prediction.predicted_margin)}</span>
+                    <span className="sm:hidden">{Math.floor(Math.abs(prediction.predicted_margin))}pts</span>
                   </td>
                   <WinProbCell probability={winProbability} />
                 </tr>

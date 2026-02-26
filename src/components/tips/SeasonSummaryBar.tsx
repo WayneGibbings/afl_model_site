@@ -6,7 +6,7 @@ interface SeasonSummaryBarProps {
 
 export function SeasonSummaryBar({ summary }: SeasonSummaryBarProps) {
   return (
-    <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       <SummaryCard
         label="Tips Correct"
         value={`${summary.tipsCorrect} / ${summary.totalTips}`}
@@ -56,7 +56,7 @@ function SummaryCard({
   const colors = accentMap[accent];
   return (
     <div
-      className="card relative overflow-hidden px-5 py-4"
+      className="card relative overflow-hidden px-3 py-3 sm:px-5 sm:py-4"
       style={{ borderTop: `3px solid ${colors.bar}` }}
     >
       <div className="flex items-start justify-between">
@@ -64,7 +64,7 @@ function SummaryCard({
           <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">
             {label}
           </p>
-          <p className="text-2xl font-extrabold tracking-tight text-slate-900">{value}</p>
+          <p className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">{value}</p>
         </div>
         <span
           className="text-lg w-9 h-9 rounded-lg flex items-center justify-center font-bold"
