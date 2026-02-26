@@ -13,7 +13,9 @@ export default async function LadderPage() {
     <div className="space-y-6">
       <header className="page-header">
         <h1 className="page-title">Predicted Ladder</h1>
-        <p className="text-slate-500 mt-1 text-sm">Model projections for final season standings</p>
+        <p className="mt-1.5 text-sm" style={{ color: "var(--muted)" }}>
+          Model projections for final season standings
+        </p>
       </header>
       <LadderView preseasonRows={preseasonRows} currentRows={currentRows} seasonStarted={seasonStarted} />
     </div>
