@@ -48,8 +48,9 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => {
-            const status = getFinalsStatus(row.position);
+          {rows.map((row, index) => {
+            const displayPosition = index + 1;
+            const status = getFinalsStatus(displayPosition);
             const colors = finalsColors[status];
             return (
               <tr
@@ -62,7 +63,7 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
                     className="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold"
                     style={{ background: colors.badge, color: colors.badgeText }}
                   >
-                    {row.position}
+                    {displayPosition}
                   </span>
                 </td>
                 <td className="px-4 py-3">
@@ -106,9 +107,9 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
 
       {/* Legend */}
       <div className="px-4 py-3 border-t flex flex-wrap items-center gap-4" style={{ borderColor: "var(--border)" }}>
-        <LegendItem color="var(--brand)" label="Top 6 \u2014 Direct finals" />
-        <LegendItem color="var(--gold)" label="7\u201310 \u2014 Playoff round" />
-        <LegendItem color="var(--border)" label="11\u201318 \u2014 Eliminated" />
+        <LegendItem color="var(--brand)" label="Top 6 — Direct finals" />
+        <LegendItem color="var(--gold)" label="7–10 — Playoff round" />
+        <LegendItem color="var(--border)" label="11–18 — Eliminated" />
       </div>
     </div>
   );

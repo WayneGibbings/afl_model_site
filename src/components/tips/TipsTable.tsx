@@ -4,14 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { teams, type TeamKey } from "@/config/teams";
 import { formatMarginPoints, formatPredictionDate, getPredictionChronologicalValue } from "@/lib/format";
-import type { SortKey, UpcomingPrediction } from "@/lib/types";
+import type { UpcomingPrediction } from "@/lib/types";
 import { RoundFilter } from "./RoundFilter";
 
 interface TipsTableProps {
   predictions: UpcomingPrediction[];
 }
-
-type SortDirection = "asc" | "desc";
 
 export function TipsTable({ predictions }: TipsTableProps) {
   const roundOptions = useMemo(() => {
@@ -27,8 +25,6 @@ export function TipsTable({ predictions }: TipsTableProps) {
   }, [predictions]);
 
   const [selectedRound, setSelectedRound] = useState<string>(() => predictions[0]?.round ?? "");
-  const [sortKey, setSortKey] = useState<SortKey>("date");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [browserTimeZone, setBrowserTimeZone] = useState<string | null>(null);
 
   useEffect(() => {
@@ -41,33 +37,15 @@ export function TipsTable({ predictions }: TipsTableProps) {
 
   const rows = useMemo(() => {
     const filtered = selectedRound ? predictions.filter((p) => p.round === selectedRound) : predictions;
-    return [...filtered].sort((a, b) => {
-      const multiplier = sortDirection === "asc" ? 1 : -1;
-      if (sortKey === "date") {
-        return (getPredictionChronologicalValue(a) - getPredictionChronologicalValue(b)) * multiplier;
-      }
-      if (sortKey === "margin") {
-        return (Math.abs(a.predicted_margin) - Math.abs(b.predicted_margin)) * multiplier;
-      }
-      const aProb = a.predicted_winner === a.home_team ? a.home_win_probability : a.away_win_probability;
-      const bProb = b.predicted_winner === b.home_team ? b.home_win_probability : b.away_win_probability;
-      return (aProb - bProb) * multiplier;
-    });
-  }, [predictions, selectedRound, sortDirection, sortKey]);
-
-  function setSort(nextKey: SortKey) {
-    if (sortKey === nextKey) {
-      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
-      return;
-    }
-    setSortKey(nextKey);
-    setSortDirection("asc");
-  }
+    return [...filtered].sort(
+      (a, b) => getPredictionChronologicalValue(a) - getPredictionChronologicalValue(b),
+    );
+  }, [predictions, selectedRound]);
 
   return (
     <section className="space-y-4">
       {/* Controls bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           {roundOptions.length > 1 ? (
             <RoundFilter options={roundOptions} selectedRound={selectedRound} onChange={setSelectedRound} />
@@ -76,20 +54,10 @@ export function TipsTable({ predictions }: TipsTableProps) {
               {selectedRound}
             </span>
           )}
-          <span className="text-xs font-medium" style={{ color: "var(--muted)" }}>
-            {rows.length} match{rows.length !== 1 ? "es" : ""}
-          </span>
         </div>
-
-        {/* Sort chips */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] font-semibold uppercase tracking-widest mr-1" style={{ color: "var(--muted)" }}>
-            Sort
-          </span>
-          <SortChip label="Date" sortKey="date" activeKey={sortKey} dir={sortDirection} onClick={() => setSort("date")} />
-          <SortChip label="Margin" sortKey="margin" activeKey={sortKey} dir={sortDirection} onClick={() => setSort("margin")} />
-          <SortChip label="Win %" sortKey="winPct" activeKey={sortKey} dir={sortDirection} onClick={() => setSort("winPct")} />
-        </div>
+        <span className="text-xs font-medium" style={{ color: "var(--muted)" }}>
+          {rows.length} match{rows.length !== 1 ? "es" : ""}
+        </span>
       </div>
 
       {/* Match cards grid */}
@@ -281,47 +249,5 @@ function TeamSide({
         </span>
       </div>
     </div>
-  );
-}
-
-/* ---------- Sort Chip ---------- */
-
-function SortChip({
-  label,
-  sortKey,
-  activeKey,
-  dir,
-  onClick,
-}: {
-  label: string;
-  sortKey: SortKey;
-  activeKey: SortKey;
-  dir: SortDirection;
-  onClick: () => void;
-}) {
-  const active = sortKey === activeKey;
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer"
-      style={
-        active
-          ? {
-              background: "var(--brand)",
-              color: "white",
-            }
-          : {
-              background: "var(--surface)",
-              color: "var(--muted)",
-              boxShadow: "inset 0 0 0 1px var(--border)",
-            }
-      }
-    >
-      {label}
-      <span className="text-[9px] opacity-70">
-        {active ? (dir === "asc" ? "\u25B2" : "\u25BC") : "\u21C5"}
-      </span>
-    </button>
   );
 }

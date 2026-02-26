@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -33,16 +32,29 @@ export function Navbar() {
       />
 
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-0">
-        {/* Logo — full branded image */}
-        <Link href="/" className="flex items-center py-2.5 group">
-          <Image
-            src="/teams/waynealytics_logo_full.png"
-            alt="Waynealytics AFLM Tips"
-            width={200}
-            height={48}
-            className="h-10 w-auto sm:h-12 transition-opacity group-hover:opacity-90"
-            priority
-          />
+        {/* Logotype */}
+        <Link href="/" className="flex items-center gap-2 py-3.5 group">
+          {/* Icon mark */}
+          <span
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-sm font-black"
+            style={{
+              background: "var(--gold)",
+              color: "var(--nav-bg)",
+            }}
+          >
+            W
+          </span>
+          <div className="flex flex-col leading-none">
+            <span className="text-white font-bold text-base tracking-tight group-hover:opacity-90 transition-opacity">
+              Waynealytics
+            </span>
+            <span
+              className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+              style={{ color: "var(--gold)" }}
+            >
+              AFLM Tips
+            </span>
+          </div>
         </Link>
 
         {/* Mobile menu button */}
