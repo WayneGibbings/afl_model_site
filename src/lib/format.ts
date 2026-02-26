@@ -55,16 +55,17 @@ export function formatPredictionDate(
   prediction: Pick<UpcomingPrediction, "date" | "kickoff_time_utc_iso">,
   timeZone?: string,
 ): string {
-  if (prediction.kickoff_time_utc_iso == null) {
-    return formatMatchDay(prediction.date);
+  const isoTime = prediction.kickoff_time_utc_iso;
+  if (typeof isoTime === "string" && isoTime.trim()) {
+    return formatMatchDate(isoTime, timeZone);
   }
 
-  const source =
-    typeof prediction.kickoff_time_utc_iso === "string" && prediction.kickoff_time_utc_iso.trim()
-      ? prediction.kickoff_time_utc_iso
-      : prediction.date;
+  // Fall back to the date field if it contains a time component (handles legacy data format)
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(prediction.date)) {
+    return formatMatchDate(prediction.date, timeZone);
+  }
 
-  return formatMatchDate(source, timeZone);
+  return formatMatchDay(prediction.date);
 }
 
 export function formatPct(probability: number): string {

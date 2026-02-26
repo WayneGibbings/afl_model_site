@@ -66,10 +66,10 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
                 {mode === "preseason" ? (
                   <>
                     <td className="px-4 py-3 text-right font-mono font-semibold text-slate-700">
-                      {row.wins.toFixed(1)}
+                      {row.wins}
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-slate-600">
-                      {row.percentage.toFixed(1)}
+                      {row.percentage != null ? `${row.percentage.toFixed(1)}%` : "—"}
                     </td>
                   </>
                 ) : (
@@ -78,10 +78,10 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
                       {`${row.wins}-${row.losses}-${row.draws}`}
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-slate-600">
-                      {row.percentage.toFixed(1)}
+                      {row.percentage != null ? `${row.percentage.toFixed(1)}%` : "—"}
                     </td>
                     <td className="px-4 py-3 text-right font-mono font-semibold text-slate-700">
-                      {row.predicted_final_wins?.toFixed(1) ?? "—"}
+                      {row.predicted_final_wins != null ? row.predicted_final_wins : "—"}
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-slate-600">
                       {row.predicted_final_position ?? "—"}

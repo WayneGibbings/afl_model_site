@@ -5,6 +5,7 @@ import { TeamBadge } from "@/components/shared/TeamBadge";
 import { WinProbCell } from "@/components/shared/WinProbCell";
 import { formatMarginPoints, formatPredictionDate, getPredictionChronologicalValue } from "@/lib/format";
 import type { SortKey, UpcomingPrediction } from "@/lib/types";
+import { RoundFilter } from "./RoundFilter";
 
 interface TipsTableProps {
   predictions: UpcomingPrediction[];
@@ -13,6 +14,19 @@ interface TipsTableProps {
 type SortDirection = "asc" | "desc";
 
 export function TipsTable({ predictions }: TipsTableProps) {
+  const roundOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const opts: { value: string; label: string }[] = [];
+    for (const p of predictions) {
+      if (!seen.has(p.round)) {
+        seen.add(p.round);
+        opts.push({ value: p.round, label: p.round });
+      }
+    }
+    return opts;
+  }, [predictions]);
+
+  const [selectedRound, setSelectedRound] = useState<string>(() => predictions[0]?.round ?? "");
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [browserTimeZone, setBrowserTimeZone] = useState<string | null>(null);
@@ -29,7 +43,8 @@ export function TipsTable({ predictions }: TipsTableProps) {
   }, []);
 
   const rows = useMemo(() => {
-    return [...predictions].sort((a, b) => {
+    const filtered = selectedRound ? predictions.filter((p) => p.round === selectedRound) : predictions;
+    return [...filtered].sort((a, b) => {
       const multiplier = sortDirection === "asc" ? 1 : -1;
 
       if (sortKey === "date") {
@@ -45,9 +60,7 @@ export function TipsTable({ predictions }: TipsTableProps) {
       const bProb = b.predicted_winner === b.home_team ? b.home_win_probability : b.away_win_probability;
       return (aProb - bProb) * multiplier;
     });
-  }, [predictions, sortDirection, sortKey]);
-
-  const roundLabel = predictions[0]?.round ?? "";
+  }, [predictions, selectedRound, sortDirection, sortKey]);
 
   function setSort(nextKey: SortKey) {
     if (sortKey === nextKey) {
@@ -61,14 +74,16 @@ export function TipsTable({ predictions }: TipsTableProps) {
 
   return (
     <section className="space-y-4">
-      {roundLabel ? (
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-slate-700">{roundLabel}</span>
-          <span className="text-xs text-slate-400 font-medium">
-            {rows.length} match{rows.length !== 1 ? "es" : ""}
-          </span>
-        </div>
-      ) : null}
+      <div className="flex items-center justify-between">
+        {roundOptions.length > 1 ? (
+          <RoundFilter options={roundOptions} selectedRound={selectedRound} onChange={setSelectedRound} />
+        ) : (
+          <span className="text-sm font-semibold text-slate-700">{selectedRound}</span>
+        )}
+        <span className="text-xs text-slate-400 font-medium">
+          {rows.length} match{rows.length !== 1 ? "es" : ""}
+        </span>
+      </div>
       <div className="card overflow-x-auto">
         <table className="data-table">
           <thead>

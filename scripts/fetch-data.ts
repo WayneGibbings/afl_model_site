@@ -144,10 +144,6 @@ const queries = {
             AND  m.away_team = p.away_team
         )
     ),
-    next_round_order AS (
-      SELECT MIN(round_order) AS round_order
-      FROM   unplayed
-    )
     SELECT
       u.round,
       u.date,
@@ -165,9 +161,9 @@ const queries = {
       u.home_elo,
       u.away_elo,
       u.elo_diff
-    FROM       unplayed         u
-    INNER JOIN next_round_order n ON n.round_order = u.round_order
+    FROM unplayed u
     ORDER BY
+      u.round_order,
       u.date,
       u.kickoff_time_utc NULLS LAST,
       u.home_team
