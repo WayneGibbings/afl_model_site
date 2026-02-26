@@ -78,6 +78,31 @@ const accuracySchema = z.object({
   by_round: z.array(accuracyRoundSchema),
 });
 
+function normalisePredictionDate(value: unknown): string {
+  if (typeof value !== "string") {
+    return String(value ?? "");
+  }
+
+  const trimmed = value.trim();
+
+  // Convert "YYYY-MM-DD HH:mm:ss(.sss)" to ISO form.
+  const withT = trimmed.includes(" ") ? trimmed.replace(" ", "T") : trimmed;
+
+  // Normalise compact offsets like +1000 -> +10:00.
+  if (/[+-]\d{4}$/.test(withT)) {
+    return withT.replace(/([+-]\d{2})(\d{2})$/, "$1:$2");
+  }
+
+  // Normalise short offsets like +10 -> +10:00.
+  if (/[+-]\d{2}$/.test(withT)) {
+    return `${withT}:00`;
+  }
+
+  // If no timezone is present, treat Databricks timestamp as UTC.
+  const hasTimezone = /(?:Z|[+-]\d{2}:\d{2})$/.test(withT);
+  return hasTimezone ? withT : `${withT}Z`;
+}
+
 const host = process.env.DATABRICKS_HOST;
 const token = process.env.DATABRICKS_TOKEN;
 const httpPath = process.env.DATABRICKS_HTTP_PATH;
@@ -364,11 +389,7 @@ const queries = {
     WITH completed AS (
       SELECT
         p.round AS round_label,
-        CASE
-          WHEN p.round = 'Opening Round' THEN 0
-          WHEN p.round LIKE 'Round %' THEN CAST(SUBSTR(p.round, 7) AS INT)
-          ELSE 99
-        END AS round_order,
+        p.date AS date,
         CAST(p.predicted_winner = m.winner AS INT) AS correct,
         ABS(p.predicted_margin - m.margin) AS margin_error,
         CASE
@@ -384,16 +405,26 @@ const queries = {
        AND p.away_team = m.away_team
       WHERE p.season = ${season}
     ),
-    by_round AS (
+    by_round_base AS (
       SELECT
-        round_order,
         round_label,
+        MIN(date) AS first_round_date,
         COUNT(*) AS tips,
         CAST(SUM(correct) AS INT) AS correct,
         ROUND(SUM(correct) * 100.0 / COUNT(*), 1) AS accuracy_pct,
         ROUND(AVG(margin_error), 1) AS mae
       FROM completed
-      GROUP BY round_order, round_label
+      GROUP BY round_label
+    ),
+    by_round AS (
+      SELECT
+        DENSE_RANK() OVER (ORDER BY first_round_date ASC, round_label ASC) AS round_order,
+        round_label,
+        tips,
+        correct,
+        accuracy_pct,
+        mae
+      FROM by_round_base
     ),
     overall AS (
       SELECT
@@ -510,6 +541,7 @@ async function main() {
 
   const normalizedPredictions = rawPredictions.map((row) => ({
     ...row,
+    date: normalisePredictionDate(row.date),
     home_team: mapTeamKey(row.home_team, "home_team"),
     away_team: mapTeamKey(row.away_team, "away_team"),
     predicted_winner: mapTeamKey(row.predicted_winner, "predicted_winner"),
