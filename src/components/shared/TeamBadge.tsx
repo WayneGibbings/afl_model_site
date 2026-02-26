@@ -5,6 +5,7 @@ interface TeamBadgeProps {
   team: TeamKey;
   size?: "sm" | "md";
   showFullName?: boolean;
+  showName?: boolean;
 }
 
 const iconSizes = {
@@ -12,7 +13,7 @@ const iconSizes = {
   md: 26,
 };
 
-export function TeamBadge({ team, size = "sm", showFullName = false }: TeamBadgeProps) {
+export function TeamBadge({ team, size = "sm", showFullName = false, showName = true }: TeamBadgeProps) {
   const teamInfo = teams[team];
   const iconSize = iconSizes[size];
   const name = showFullName ? teamInfo.name : teamInfo.short;
@@ -25,9 +26,11 @@ export function TeamBadge({ team, size = "sm", showFullName = false }: TeamBadge
       >
         <Image src={teamInfo.icon} alt={`${teamInfo.name} logo`} width={iconSize} height={iconSize} />
       </span>
-      <span className={`font-semibold tracking-wide text-slate-800 ${size === "md" ? "text-sm" : "text-xs"}`}>
-        {name}
-      </span>
+      {showName ? (
+        <span className={`font-semibold tracking-wide text-slate-800 ${size === "md" ? "text-sm" : "text-xs"}`}>
+          {name}
+        </span>
+      ) : null}
     </span>
   );
 }

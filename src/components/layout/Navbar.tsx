@@ -29,11 +29,11 @@ export function Navbar() {
             className="rounded-full ring-2 ring-white/10 group-hover:ring-white/30 transition-all"
             priority
           />
-          <div className="hidden sm:block">
-            <span className="block text-white font-bold text-lg leading-tight tracking-tight">
+          <div className="block">
+            <span className="block text-white font-bold text-base leading-tight tracking-tight sm:text-lg">
               Waynealytics
             </span>
-            <span className="block text-blue-300 text-xs font-medium tracking-widest uppercase">
+            <span className="block text-blue-300 text-[10px] font-medium tracking-widest uppercase sm:text-xs">
               AFL Tips
             </span>
           </div>

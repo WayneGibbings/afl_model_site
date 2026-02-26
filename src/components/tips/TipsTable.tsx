@@ -117,10 +117,10 @@ export function TipsTable({ predictions }: TipsTableProps) {
                   </td>
                   <td className="hidden px-4 py-3 text-slate-500 text-sm md:table-cell">{prediction.venue}</td>
                   <td className="px-4 py-3">
-                    <TeamBadge team={prediction.home_team} size="sm" />
+                    <TeamBadge team={prediction.home_team} size="sm" showName={false} />
                   </td>
                   <td className="px-4 py-3">
-                    <TeamBadge team={prediction.away_team} size="sm" />
+                    <TeamBadge team={prediction.away_team} size="sm" showName={false} />
                   </td>
                   <td className="px-4 py-3">
                     <TeamBadge team={prediction.predicted_winner} size="sm" />
