@@ -1,6 +1,6 @@
 import { access, readFile } from "node:fs/promises";
 import path from "node:path";
-import type { AccuracyData, LadderEntry, Prediction } from "@/lib/types";
+import type { AccuracyData, LadderEntry, UpcomingPrediction } from "@/lib/types";
 
 async function fileExists(filePath: string): Promise<boolean> {
   try {
@@ -24,8 +24,8 @@ async function loadJsonWithFallback<T>(fileName: string): Promise<T> {
   return JSON.parse(raw) as T;
 }
 
-export function loadPredictions(): Promise<Prediction[]> {
-  return loadJsonWithFallback<Prediction[]>("predictions.json");
+export function loadUpcomingPredictions(): Promise<UpcomingPrediction[]> {
+  return loadJsonWithFallback<UpcomingPrediction[]>("upcoming-predictions.json");
 }
 
 export function loadLadderPreseason(): Promise<LadderEntry[]> {

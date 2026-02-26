@@ -1,22 +1,23 @@
 import { SeasonSummaryBar } from "@/components/tips/SeasonSummaryBar";
-import { loadAccuracy, loadPredictions } from "@/lib/data";
+import { loadAccuracy, loadUpcomingPredictions } from "@/lib/data";
 import { TipsTable } from "@/components/tips/TipsTable";
 import { getSeasonSummary } from "@/lib/tips";
 
 export default async function TipsPage() {
-  const rows = await loadPredictions();
-  const accuracyData = await loadAccuracy();
+  const [predictions, accuracyData] = await Promise.all([loadUpcomingPredictions(), loadAccuracy()]);
   const summary = getSeasonSummary(accuracyData);
-  const hasResults = rows.some((row) => row.tip_correct !== null);
+  const roundLabel = predictions[0]?.round ?? "";
 
   return (
     <div className="space-y-6">
       <header className="page-header">
-        <h1 className="page-title">{rows[0]?.season ?? "Current"} Tips</h1>
-        <p className="text-slate-500 mt-1 text-sm">Model predictions for every match this season</p>
+        <h1 className="page-title">{accuracyData.season} Tips</h1>
+        <p className="text-slate-500 mt-1 text-sm">
+          {roundLabel ? `Model predictions for ${roundLabel}` : "Model predictions for the upcoming round"}
+        </p>
       </header>
-      {hasResults ? <SeasonSummaryBar summary={summary} /> : null}
-      <TipsTable predictions={rows} />
+      {accuracyData.total_tips > 0 ? <SeasonSummaryBar summary={summary} /> : null}
+      <TipsTable predictions={predictions} />
     </div>
   );
 }

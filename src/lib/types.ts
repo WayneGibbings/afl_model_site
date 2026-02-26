@@ -1,20 +1,22 @@
 import type { TeamKey } from "@/config/teams";
 
-export interface Prediction {
-  season: number;
-  round: number;
-  round_label: string;
+export interface UpcomingPrediction {
+  round: string;
   date: string;
-  venue: string;
+  kickoff_time_utc?: string | null;
+  kickoff_time_local?: string | null;
+  kickoff_tz_offset?: string | null;
+  kickoff_time_utc_iso?: string | null;
   home_team: TeamKey;
   away_team: TeamKey;
+  venue: string;
   predicted_winner: TeamKey;
+  home_win_probability: number;
+  away_win_probability: number;
   predicted_margin: number;
-  win_probability: number;
-  actual_winner: TeamKey | null;
-  actual_margin: number | null;
-  tip_correct: boolean | null;
-  margin_error: number | null;
+  home_elo: number;
+  away_elo: number;
+  elo_diff: number;
 }
 
 export interface LadderEntry {
@@ -28,6 +30,16 @@ export interface LadderEntry {
   predicted_final_position?: number;
 }
 
+export interface AccuracyGame {
+  date: string;
+  kickoff_time_utc?: string | null;
+  home_team: TeamKey;
+  away_team: TeamKey;
+  predicted_winner: TeamKey;
+  actual_winner: TeamKey;
+  correct: boolean;
+}
+
 export interface AccuracyByRound {
   round: number;
   round_label: string;
@@ -35,6 +47,7 @@ export interface AccuracyByRound {
   correct: number;
   accuracy_pct: number;
   mae: number;
+  games: AccuracyGame[];
 }
 
 export interface AccuracyData {
@@ -56,11 +69,4 @@ export interface SeasonSummary {
   bits: number;
 }
 
-export interface RoundOption {
-  value: string;
-  label: string;
-  hasResults: boolean;
-  isCurrent: boolean;
-}
-
-export type SortKey = "round" | "date" | "margin" | "winPct" | "actual" | "mae";
+export type SortKey = "date" | "margin" | "winPct";

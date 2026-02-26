@@ -2,21 +2,17 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { TeamBadge } from "@/components/shared/TeamBadge";
-import { TipResultBadge } from "@/components/shared/TipResultBadge";
 import { WinProbCell } from "@/components/shared/WinProbCell";
-import { formatMatchDate } from "@/lib/format";
-import { getDefaultRound, getFilteredPredictions, getRoundOptions } from "@/lib/tips";
-import type { Prediction, SortKey } from "@/lib/types";
-import { RoundFilter } from "./RoundFilter";
+import { formatMarginPoints, formatPredictionDate, getPredictionChronologicalValue } from "@/lib/format";
+import type { SortKey, UpcomingPrediction } from "@/lib/types";
 
 interface TipsTableProps {
-  predictions: Prediction[];
+  predictions: UpcomingPrediction[];
 }
 
 type SortDirection = "asc" | "desc";
 
 export function TipsTable({ predictions }: TipsTableProps) {
-  const [selectedRound, setSelectedRound] = useState<string>(() => getDefaultRound(predictions));
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [browserTimeZone, setBrowserTimeZone] = useState<string | null>(null);
@@ -32,40 +28,26 @@ export function TipsTable({ predictions }: TipsTableProps) {
     };
   }, []);
 
-  const roundOptions = useMemo(() => getRoundOptions(predictions), [predictions]);
-
   const rows = useMemo(() => {
-    const filtered = getFilteredPredictions(predictions, selectedRound);
-    const sorted = [...filtered].sort((a, b) => {
+    return [...predictions].sort((a, b) => {
       const multiplier = sortDirection === "asc" ? 1 : -1;
 
-      if (sortKey === "round") {
-        return (a.round - b.round) * multiplier;
-      }
-
       if (sortKey === "date") {
-        return (new Date(a.date).getTime() - new Date(b.date).getTime()) * multiplier;
+        return (getPredictionChronologicalValue(a) - getPredictionChronologicalValue(b)) * multiplier;
       }
 
       if (sortKey === "margin") {
-        return (a.predicted_margin - b.predicted_margin) * multiplier;
+        return (Math.abs(a.predicted_margin) - Math.abs(b.predicted_margin)) * multiplier;
       }
 
-      if (sortKey === "winPct") {
-        return (a.win_probability - b.win_probability) * multiplier;
-      }
-
-      if (sortKey === "actual") {
-        return ((a.actual_margin ?? -1) - (b.actual_margin ?? -1)) * multiplier;
-      }
-
-      return ((a.margin_error ?? -1) - (b.margin_error ?? -1)) * multiplier;
+      // winPct: sort by the predicted winner's probability
+      const aProb = a.predicted_winner === a.home_team ? a.home_win_probability : a.away_win_probability;
+      const bProb = b.predicted_winner === b.home_team ? b.home_win_probability : b.away_win_probability;
+      return (aProb - bProb) * multiplier;
     });
+  }, [predictions, sortDirection, sortKey]);
 
-    return sorted;
-  }, [predictions, selectedRound, sortDirection, sortKey]);
-
-  const hasResults = rows.some((row) => row.tip_correct !== null);
+  const roundLabel = predictions[0]?.round ?? "";
 
   function setSort(nextKey: SortKey) {
     if (sortKey === nextKey) {
@@ -79,19 +61,18 @@ export function TipsTable({ predictions }: TipsTableProps) {
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
-        <RoundFilter options={roundOptions} selectedRound={selectedRound} onChange={setSelectedRound} />
-        <span className="text-xs text-slate-400 font-medium">
-          {rows.length} match{rows.length !== 1 ? "es" : ""}
-        </span>
-      </div>
+      {roundLabel ? (
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-slate-700">{roundLabel}</span>
+          <span className="text-xs text-slate-400 font-medium">
+            {rows.length} match{rows.length !== 1 ? "es" : ""}
+          </span>
+        </div>
+      ) : null}
       <div className="card overflow-x-auto">
         <table className="data-table">
           <thead>
             <tr>
-              <SortableHeader onClick={() => setSort("round")} sortKey="round" activeKey={sortKey} dir={sortDirection}>
-                Round
-              </SortableHeader>
               <SortableHeader onClick={() => setSort("date")} sortKey="date" activeKey={sortKey} dir={sortDirection} className="hidden md:table-cell">
                 Date
               </SortableHeader>
@@ -105,67 +86,37 @@ export function TipsTable({ predictions }: TipsTableProps) {
               <SortableHeader onClick={() => setSort("winPct")} sortKey="winPct" activeKey={sortKey} dir={sortDirection}>
                 Win%
               </SortableHeader>
-              {hasResults ? (
-                <>
-                  <th className="px-4 py-3 text-left">Winner</th>
-                  <SortableHeader onClick={() => setSort("actual")} sortKey="actual" activeKey={sortKey} dir={sortDirection}>
-                    Actual
-                  </SortableHeader>
-                  <th className="px-4 py-3 text-center">Result</th>
-                  <SortableHeader onClick={() => setSort("mae")} sortKey="mae" activeKey={sortKey} dir={sortDirection}>
-                    MAE
-                  </SortableHeader>
-                </>
-              ) : null}
             </tr>
           </thead>
           <tbody>
-            {rows.map((prediction) => (
-              <tr key={`${prediction.round_label}-${prediction.home_team}-${prediction.away_team}`}>
-                <td className="px-4 py-3 font-medium text-slate-600 text-sm">{prediction.round_label}</td>
-                <td className="hidden px-4 py-3 text-slate-500 text-sm md:table-cell">
-                  {browserTimeZone ? formatMatchDate(prediction.date, browserTimeZone) : "\u00A0"}
-                </td>
-                <td className="hidden px-4 py-3 text-slate-500 text-sm md:table-cell">{prediction.venue}</td>
-                <td className="px-4 py-3">
-                  <TeamBadge team={prediction.home_team} size="sm" />
-                </td>
-                <td className="px-4 py-3">
-                  <TeamBadge team={prediction.away_team} size="sm" />
-                </td>
-                <td className="px-4 py-3">
-                  <TeamBadge team={prediction.predicted_winner} size="sm" />
-                </td>
-                <td className="px-4 py-3 text-right font-mono text-sm font-semibold text-slate-700">
-                  {prediction.predicted_margin.toFixed(1)}
-                </td>
-                <WinProbCell probability={prediction.win_probability} />
-                {hasResults ? (
-                  <>
-                    <td className="px-4 py-3">
-                      {prediction.actual_winner ? (
-                        <TeamBadge team={prediction.actual_winner} size="sm" />
-                      ) : (
-                        <span className="text-slate-300">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono text-sm font-semibold text-slate-700">
-                      {prediction.actual_margin ?? <span className="text-slate-300">—</span>}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <TipResultBadge correct={prediction.tip_correct} />
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono text-sm text-slate-600">
-                      {prediction.margin_error === null ? (
-                        <span className="text-slate-300">—</span>
-                      ) : (
-                        prediction.margin_error.toFixed(1)
-                      )}
-                    </td>
-                  </>
-                ) : null}
-              </tr>
-            ))}
+            {rows.map((prediction) => {
+              const winProbability =
+                prediction.predicted_winner === prediction.home_team
+                  ? prediction.home_win_probability
+                  : prediction.away_win_probability;
+
+              return (
+                <tr key={`${prediction.round}-${prediction.home_team}-${prediction.away_team}`}>
+                  <td className="hidden px-4 py-3 text-slate-500 text-sm md:table-cell">
+                    {browserTimeZone ? formatPredictionDate(prediction, browserTimeZone) : "\u00A0"}
+                  </td>
+                  <td className="hidden px-4 py-3 text-slate-500 text-sm md:table-cell">{prediction.venue}</td>
+                  <td className="px-4 py-3">
+                    <TeamBadge team={prediction.home_team} size="sm" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <TeamBadge team={prediction.away_team} size="sm" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <TeamBadge team={prediction.predicted_winner} size="sm" />
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono text-sm font-semibold text-slate-700">
+                    {formatMarginPoints(prediction.predicted_margin)}
+                  </td>
+                  <WinProbCell probability={winProbability} />
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

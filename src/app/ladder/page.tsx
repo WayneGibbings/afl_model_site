@@ -1,11 +1,13 @@
 import { LadderView } from "@/components/ladder/LadderView";
-import { loadLadderCurrent, loadLadderPreseason, loadPredictions } from "@/lib/data";
+import { loadAccuracy, loadLadderCurrent, loadLadderPreseason } from "@/lib/data";
 
 export default async function LadderPage() {
-  const preseasonRows = await loadLadderPreseason();
-  const currentRows = await loadLadderCurrent();
-  const predictionRows = await loadPredictions();
-  const seasonStarted = predictionRows.some((row) => row.actual_winner !== null);
+  const [preseasonRows, currentRows, accuracyData] = await Promise.all([
+    loadLadderPreseason(),
+    loadLadderCurrent(),
+    loadAccuracy(),
+  ]);
+  const seasonStarted = accuracyData.total_tips > 0;
 
   return (
     <div className="space-y-6">

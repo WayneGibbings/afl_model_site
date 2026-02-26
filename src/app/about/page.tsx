@@ -17,14 +17,15 @@ export default async function AboutPage() {
         <p className="text-slate-500 mt-1 text-sm">About the Waynealytics AFL prediction model</p>
       </header>
       <article
-        className="card prose max-w-3xl p-8
+        className="about-prose card prose max-w-3xl p-8
           prose-headings:font-extrabold prose-headings:tracking-tight prose-headings:text-slate-900
           prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3
           prose-p:text-slate-600 prose-p:leading-relaxed
           prose-li:text-slate-600
           prose-a:text-blue-700 prose-a:underline
           prose-strong:text-slate-800
-          prose-code:text-blue-700 prose-code:bg-blue-50 prose-code:px-1 prose-code:rounded
+          prose-code:text-slate-700 prose-code:bg-slate-100 prose-code:px-1 prose-code:rounded
+          prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:border prose-pre:border-slate-700 prose-pre:rounded-xl prose-pre:shadow-sm
         "
       >
         <div dangerouslySetInnerHTML={{ __html: rendered.toString() }} />

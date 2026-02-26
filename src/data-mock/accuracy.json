@@ -13,7 +13,54 @@
       "tips": 5,
       "correct": 3,
       "accuracy_pct": 60.0,
-      "mae": 10.1
+      "mae": 10.1,
+      "games": [
+        {
+          "date": "2026-03-05",
+          "kickoff_time_utc": "2026-03-05T08:30:00Z",
+          "home_team": "richmond",
+          "away_team": "carlton",
+          "predicted_winner": "carlton",
+          "actual_winner": "carlton",
+          "correct": true
+        },
+        {
+          "date": "2026-03-06",
+          "kickoff_time_utc": "2026-03-06T08:50:00Z",
+          "home_team": "sydney",
+          "away_team": "geelong",
+          "predicted_winner": "sydney",
+          "actual_winner": "geelong",
+          "correct": false
+        },
+        {
+          "date": "2026-03-07",
+          "kickoff_time_utc": null,
+          "home_team": "hawthorn",
+          "away_team": "collingwood",
+          "predicted_winner": "collingwood",
+          "actual_winner": "collingwood",
+          "correct": true
+        },
+        {
+          "date": "2026-03-07",
+          "kickoff_time_utc": null,
+          "home_team": "brisbane",
+          "away_team": "essendon",
+          "predicted_winner": "brisbane",
+          "actual_winner": "brisbane",
+          "correct": true
+        },
+        {
+          "date": "2026-03-08",
+          "kickoff_time_utc": null,
+          "home_team": "adelaide",
+          "away_team": "fremantle",
+          "predicted_winner": "adelaide",
+          "actual_winner": "fremantle",
+          "correct": false
+        }
+      ]
     }
   ]
 }

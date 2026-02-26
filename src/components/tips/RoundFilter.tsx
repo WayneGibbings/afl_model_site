@@ -1,4 +1,7 @@
-import type { RoundOption } from "@/lib/types";
+interface RoundOption {
+  value: string;
+  label: string;
+}
 
 interface RoundFilterProps {
   options: RoundOption[];
