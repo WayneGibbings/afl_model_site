@@ -21,13 +21,20 @@ export function TeamBadge({ team, size = "sm", showFullName = false, showName = 
   return (
     <span className="inline-flex items-center gap-2">
       <span
-        className="inline-flex shrink-0 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-slate-200"
-        style={{ width: iconSize + 10, height: iconSize + 10 }}
+        className="inline-flex shrink-0 items-center justify-center rounded-full bg-white shadow-sm"
+        style={{
+          width: iconSize + 10,
+          height: iconSize + 10,
+          boxShadow: "0 1px 3px rgba(9, 29, 35, 0.08), inset 0 0 0 1px rgba(9, 29, 35, 0.06)",
+        }}
       >
         <Image src={teamInfo.icon} alt={`${teamInfo.name} logo`} width={iconSize} height={iconSize} />
       </span>
       {showName ? (
-        <span className={`font-semibold tracking-wide text-slate-800 ${size === "md" ? "text-sm" : "text-xs"}`}>
+        <span
+          className={`font-semibold tracking-wide ${size === "md" ? "text-sm" : "text-xs"}`}
+          style={{ color: "var(--foreground)" }}
+        >
           {name}
         </span>
       ) : null}

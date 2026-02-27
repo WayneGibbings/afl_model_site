@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Lexend } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 
-const inter = Inter({
+const lexend = Lexend({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-lexend",
   display: "swap",
 });
 
@@ -21,11 +21,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-AU" className={inter.variable}>
+    <html lang="en-AU" className={lexend.variable}>
       <body>
-        <div className="min-h-screen flex flex-col">
+        <div className="relative z-[1] min-h-screen flex flex-col">
           <Navbar />
-          <main className="mx-auto w-full max-w-6xl px-4 py-4 sm:py-8 flex-1">{children}</main>
+          <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:py-8 flex-1">{children}</main>
           <Footer />
         </div>
       </body>

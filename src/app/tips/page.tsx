@@ -12,7 +12,7 @@ export default async function TipsPage() {
     <div className="space-y-6">
       <header className="page-header">
         <h1 className="page-title">{accuracyData.season} Tips</h1>
-        <p className="text-slate-500 mt-1 text-sm">
+        <p className="mt-1.5 text-sm" style={{ color: "var(--muted)" }}>
           {roundLabel ? `Model predictions for ${roundLabel}` : "Model predictions for the upcoming round"}
         </p>
       </header>

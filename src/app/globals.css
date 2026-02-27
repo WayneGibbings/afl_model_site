@@ -2,18 +2,32 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --background: #f0f4f8;
+  /* Palette derived from the Waynealytics logo */
+  --background: #f3f6f7;
   --surface: #ffffff;
-  --surface-raised: #f8fafc;
-  --foreground: #0f1929;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --nav-bg: #0f1929;
-  --nav-text: #e2e8f0;
-  --accent: #1d4ed8;
-  --accent-hover: #1e40af;
-  --accent-red: #dc2626;
-  --accent-gold: #f59e0b;
+  --surface-raised: #f8fafb;
+  --foreground: #0c1e25;
+  --muted: #5a7a84;
+  --border: #d5dee2;
+
+  /* Brand teal (primary from logo circles) */
+  --brand: #1a7a8a;
+  --brand-hover: #15616d;
+  --brand-dark: #0f3a44;
+  --brand-deep: #091d23;
+
+  /* Brand gold (accent from logo bars/football) */
+  --gold: #c9a54c;
+  --gold-light: #f7f0dc;
+  --gold-dark: #8a7234;
+
+  /* Nav + footer */
+  --nav-bg: #071a20;
+  --nav-text: #d5e8ed;
+
+  /* Semantic */
+  --success: #16a34a;
+  --danger: #dc2626;
 }
 
 * {
@@ -24,24 +38,45 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-lexend), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
+/* Subtle teal wash at top of page */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  height: 480px;
+  background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(26, 122, 138, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
 
 /* Page header shared style */
 .page-header {
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+
+.page-header::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--gold);
 }
 
 .page-title {
   font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.025em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   color: var(--foreground);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 @media (min-width: 640px) {
@@ -50,7 +85,7 @@ body {
     margin-bottom: 1.5rem;
   }
   .page-title {
-    font-size: 1.875rem;
+    font-size: 2rem;
   }
 }
 
@@ -58,8 +93,10 @@ body {
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  border-radius: 0.875rem;
+  box-shadow:
+    0 1px 3px rgba(9, 29, 35, 0.06),
+    0 1px 2px rgba(9, 29, 35, 0.04);
 }
 
 /* Table resets */
@@ -70,22 +107,22 @@ body {
 }
 
 .data-table thead tr {
-  background: #f8fafc;
+  background: var(--surface-raised);
   border-bottom: 2px solid var(--border);
 }
 
 .data-table thead th {
-  padding: 0.5rem 0.625rem;
+  padding: 0.625rem 0.75rem;
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--muted);
 }
 
 .data-table tbody tr {
   border-bottom: 1px solid var(--border);
-  transition: background-color 0.1s ease;
+  transition: background-color 0.15s ease;
 }
 
 .data-table tbody tr:last-child {
@@ -93,11 +130,11 @@ body {
 }
 
 .data-table tbody tr:hover {
-  background: #f8fafc;
+  background: rgba(26, 122, 138, 0.03);
 }
 
 .data-table td {
-  padding: 0.5rem 0.625rem;
+  padding: 0.625rem 0.75rem;
 }
 
 @media (min-width: 640px) {
@@ -115,4 +152,20 @@ body {
   color: inherit !important;
   background: transparent !important;
   padding: 0 !important;
+}
+
+/* Match card animations */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.match-card {
+  animation: cardIn 0.35s ease-out both;
 }

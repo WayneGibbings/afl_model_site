@@ -1,5 +1,4 @@
 import { TeamBadge } from "@/components/shared/TeamBadge";
-import { teams } from "@/config/teams";
 import type { LadderEntry } from "@/lib/types";
 
 interface LadderTableProps {
@@ -7,7 +6,6 @@ interface LadderTableProps {
   mode: "preseason" | "current";
 }
 
-// Top 6 → direct finals, 7–10 → playoff round, 11+ → eliminated
 function getFinalsStatus(position: number): "top6" | "playoff" | "out" {
   if (position <= 6) return "top6";
   if (position <= 10) return "playoff";
@@ -15,9 +13,9 @@ function getFinalsStatus(position: number): "top6" | "playoff" | "out" {
 }
 
 const finalsColors = {
-  top6:   { border: "#16a34a", rowBg: "bg-green-50/40",  badge: "bg-green-600 text-white" },
-  playoff: { border: "#d97706", rowBg: "bg-amber-50/40", badge: "bg-amber-500 text-white" },
-  out:    { border: "#cbd5e1", rowBg: "",                 badge: "bg-slate-100 text-slate-500" },
+  top6: { border: "var(--brand)", badge: "var(--brand)", badgeText: "white" },
+  playoff: { border: "var(--gold)", badge: "var(--gold)", badgeText: "var(--nav-bg)" },
+  out: { border: "var(--border)", badge: "var(--surface-raised)", badgeText: "var(--muted)" },
 };
 
 export function LadderTable({ rows, mode }: LadderTableProps) {
@@ -50,20 +48,22 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => {
-            const status = getFinalsStatus(row.position);
+          {rows.map((row, index) => {
+            const displayPosition = index + 1;
+            const status = getFinalsStatus(displayPosition);
             const colors = finalsColors[status];
             return (
               <tr
                 key={`${mode}-${row.team}`}
                 style={{ borderLeft: `4px solid ${colors.border}` }}
-                className={colors.rowBg}
+                className={status === "top6" ? "bg-[rgba(26,122,138,0.03)]" : status === "playoff" ? "bg-[rgba(201,165,76,0.03)]" : ""}
               >
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${colors.badge}`}
+                    className="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold"
+                    style={{ background: colors.badge, color: colors.badgeText }}
                   >
-                    {row.position}
+                    {displayPosition}
                   </span>
                 </td>
                 <td className="px-4 py-3">
@@ -76,26 +76,26 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
                 </td>
                 {mode === "preseason" ? (
                   <>
-                    <td className="px-4 py-3 text-right font-mono font-semibold text-slate-700">
+                    <td className="px-4 py-3 text-right font-mono font-semibold" style={{ color: "var(--foreground)" }}>
                       {row.wins}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-600">
-                      {row.percentage != null ? `${row.percentage.toFixed(1)}%` : "—"}
+                    <td className="px-4 py-3 text-right font-mono" style={{ color: "var(--muted)" }}>
+                      {row.percentage != null ? `${row.percentage.toFixed(1)}%` : "\u2014"}
                     </td>
                   </>
                 ) : (
                   <>
-                    <td className="px-4 py-3 text-right font-mono font-semibold text-slate-700">
+                    <td className="px-4 py-3 text-right font-mono font-semibold" style={{ color: "var(--foreground)" }}>
                       {`${row.wins}-${row.losses}-${row.draws}`}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-600">
-                      {row.percentage != null ? `${row.percentage.toFixed(1)}%` : "—"}
+                    <td className="px-4 py-3 text-right font-mono" style={{ color: "var(--muted)" }}>
+                      {row.percentage != null ? `${row.percentage.toFixed(1)}%` : "\u2014"}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono font-semibold text-slate-700">
-                      {row.predicted_final_wins != null ? row.predicted_final_wins : "—"}
+                    <td className="px-4 py-3 text-right font-mono font-semibold" style={{ color: "var(--foreground)" }}>
+                      {row.predicted_final_wins != null ? row.predicted_final_wins : "\u2014"}
                     </td>
-                    <td className="hidden sm:table-cell px-4 py-3 text-right font-mono text-slate-600">
-                      {row.predicted_final_position ?? "—"}
+                    <td className="hidden sm:table-cell px-4 py-3 text-right font-mono" style={{ color: "var(--muted)" }}>
+                      {row.predicted_final_position ?? "\u2014"}
                     </td>
                   </>
                 )}
@@ -106,10 +106,10 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
       </table>
 
       {/* Legend */}
-      <div className="px-4 py-3 border-t border-slate-100 flex flex-wrap items-center gap-4">
-        <LegendItem color="#16a34a" label="Top 6 — Direct finals" />
-        <LegendItem color="#d97706" label="7–10 — Playoff round" />
-        <LegendItem color="#cbd5e1" label="11–18 — Eliminated" />
+      <div className="px-4 py-3 border-t flex flex-wrap items-center gap-4" style={{ borderColor: "var(--border)" }}>
+        <LegendItem color="var(--brand)" label="Top 6 — Direct finals" />
+        <LegendItem color="var(--gold)" label="7–10 — Wildcard round" />
+        <LegendItem color="var(--border)" label="11–18 — Eliminated" />
       </div>
     </div>
   );
@@ -117,7 +117,7 @@ export function LadderTable({ rows, mode }: LadderTableProps) {
 
 function LegendItem({ color, label }: { color: string; label: string }) {
   return (
-    <span className="flex items-center gap-1.5 text-xs text-slate-500">
+    <span className="flex items-center gap-1.5 text-xs" style={{ color: "var(--muted)" }}>
       <span className="inline-block w-3 h-3 rounded-sm" style={{ background: color }} />
       {label}
     </span>

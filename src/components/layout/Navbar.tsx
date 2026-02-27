@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -17,24 +16,43 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav style={{ background: "var(--nav-bg)" }} className="shadow-lg">
+    <nav
+      className="shadow-lg relative"
+      style={{
+        background: "linear-gradient(135deg, var(--nav-bg) 0%, var(--brand-dark) 100%)",
+      }}
+    >
+      {/* Subtle gold accent line at bottom of nav */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[2px]"
+        style={{
+          background: "linear-gradient(90deg, var(--gold) 0%, transparent 60%)",
+          opacity: 0.5,
+        }}
+      />
+
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-0">
-        {/* Logo + brand */}
-        <Link href="/" className="flex items-center gap-3 py-2 group">
-          <Image
-            src="/teams/waynealytics_aflm_tips_logo.png"
-            alt="Waynealytics AFL Tips logo"
-            width={52}
-            height={52}
-            className="rounded-full ring-2 ring-white/10 group-hover:ring-white/30 transition-all"
-            priority
-          />
-          <div className="block">
-            <span className="block text-white font-bold text-base leading-tight tracking-tight sm:text-lg">
+        {/* Logotype */}
+        <Link href="/" className="flex items-center gap-2 py-3.5 group">
+          {/* Icon mark */}
+          <span
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-sm font-black"
+            style={{
+              background: "var(--gold)",
+              color: "var(--nav-bg)",
+            }}
+          >
+            W
+          </span>
+          <div className="flex flex-col leading-none">
+            <span className="text-white font-bold text-base tracking-tight group-hover:opacity-90 transition-opacity">
               Waynealytics
             </span>
-            <span className="block text-blue-300 text-[10px] font-medium tracking-widest uppercase sm:text-xs">
-              AFL Tips
+            <span
+              className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+              style={{ color: "var(--gold)" }}
+            >
+              AFLM Tips
             </span>
           </div>
         </Link>
@@ -42,25 +60,37 @@ export function Navbar() {
         {/* Mobile menu button */}
         <button
           type="button"
-          className="rounded-md border border-white/20 px-3 py-2 text-sm text-white/80 hover:text-white hover:border-white/40 transition-colors md:hidden"
+          className="rounded-lg border border-white/15 p-2.5 text-white/70 hover:text-white hover:border-white/30 hover:bg-white/5 transition-all md:hidden"
           onClick={() => setOpen((v) => !v)}
           aria-label="Toggle navigation menu"
         >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
             {open ? (
-              <path d="M2 2L16 16M16 2L2 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M3 3L17 17M17 3L3 17"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             ) : (
               <>
-                <line x1="2" y1="4" x2="16" y2="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <line x1="2" y1="9" x2="16" y2="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <line x1="2" y1="14" x2="16" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <line x1="3" y1="5" x2="17" y2="5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <line x1="3" y1="10" x2="17" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <line x1="3" y1="15" x2="17" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </>
             )}
           </svg>
         </button>
 
         {/* Desktop nav */}
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-0.5 md:flex">
           {navItems.map((item) => {
             const active = pathname === item.href;
             return (
@@ -70,14 +100,14 @@ export function Navbar() {
                 className={`relative px-4 py-6 text-sm font-medium transition-colors ${
                   active
                     ? "text-white"
-                    : "text-white/60 hover:text-white/90"
+                    : "text-white/50 hover:text-white/85"
                 }`}
               >
                 {item.label}
                 {active && (
                   <span
-                    className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t"
-                    style={{ background: "var(--accent)" }}
+                    className="absolute bottom-0 left-2 right-2 h-[2px] rounded-t"
+                    style={{ background: "var(--gold)" }}
                   />
                 )}
               </Link>
@@ -88,18 +118,27 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="border-t border-white/10 px-4 pb-3 md:hidden">
+        <div
+          className="border-t border-white/10 px-4 pb-3 md:hidden"
+          style={{ background: "rgba(7, 26, 32, 0.6)", backdropFilter: "blur(12px)" }}
+        >
           {navItems.map((item) => {
             const active = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`block py-3 text-sm font-medium border-b border-white/5 last:border-0 ${
-                  active ? "text-white" : "text-white/60"
+                className={`flex items-center gap-3 py-3.5 text-sm font-medium border-b border-white/5 last:border-0 transition-colors ${
+                  active ? "text-white" : "text-white/50 hover:text-white/80"
                 }`}
                 onClick={() => setOpen(false)}
               >
+                {active && (
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: "var(--gold)" }}
+                  />
+                )}
                 {item.label}
               </Link>
             );
