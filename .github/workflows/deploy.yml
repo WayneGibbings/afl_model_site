@@ -59,13 +59,13 @@ jobs:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
           GENIE_SPACE_ID: ${{ secrets.GENIE_SPACE_ID }}
 
+      - name: Deploy Hosting and Functions
+        run: npx firebase-tools deploy --only hosting,functions --project "$FIREBASE_PROJECT_ID" --non-interactive
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+
       - name: Configure Functions artifact cleanup policy
         run: npx firebase-tools functions:artifacts:setpolicy --location "$FIREBASE_FUNCTIONS_REGION" --days 30 --force --project "$FIREBASE_PROJECT_ID"
         env:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           FIREBASE_FUNCTIONS_REGION: ${{ vars.FIREBASE_FUNCTIONS_REGION || 'australia-southeast1' }}
-
-      - name: Deploy Hosting and Functions
-        run: npx firebase-tools deploy --only hosting,functions --project "$FIREBASE_PROJECT_ID" --non-interactive
-        env:
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
