@@ -32,6 +32,7 @@ Set these env vars before running the emulator:
 - `DATABRICKS_TOKEN`
 - `GENIE_SPACE_ID`
 - `FIREBASE_PROJECT_ID` (used by `next.config.ts` dev rewrite, should match emulator project)
+- `FIREBASE_FUNCTIONS_REGION` (optional, defaults to `australia-southeast1`)
 
 ## Scripts
 

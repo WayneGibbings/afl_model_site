@@ -10,12 +10,15 @@
     "rewrites": [
       {
         "source": "/api/genie",
-        "function": "genieProxy"
+        "function": {
+          "functionId": "genieProxy",
+          "region": "australia-southeast1"
+        }
       }
     ]
   },
   "functions": {
     "source": "functions",
-    "runtime": "nodejs20"
+    "runtime": "nodejs22"
   }
 }

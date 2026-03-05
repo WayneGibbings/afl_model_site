@@ -5,7 +5,7 @@ const devRewrites =
     ? {
         async rewrites() {
           const projectId = process.env.FIREBASE_PROJECT_ID ?? "demo-afl-model-site";
-          const region = process.env.FIREBASE_FUNCTIONS_REGION ?? "us-central1";
+          const region = process.env.FIREBASE_FUNCTIONS_REGION ?? "australia-southeast1";
 
           return [
             {

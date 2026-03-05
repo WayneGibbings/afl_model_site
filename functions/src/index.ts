@@ -176,6 +176,7 @@ function mapUpstreamError(error: UpstreamError): { status: number; code: string;
 
 export const genieProxy = onRequest(
   {
+    region: "australia-southeast1",
     timeoutSeconds: 120,
     maxInstances: 20,
     secrets: [DATABRICKS_HOST, DATABRICKS_TOKEN, GENIE_SPACE_ID],
