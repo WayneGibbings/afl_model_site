@@ -43,3 +43,5 @@ firebase-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 firebase-deploy-sa-key.json
+functions/node_modules/
+functions/lib/

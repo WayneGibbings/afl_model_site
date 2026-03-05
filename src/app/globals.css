@@ -169,3 +169,83 @@ body::before {
 .match-card {
   animation: cardIn 0.35s ease-out both;
 }
+
+@keyframes chatIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chatDotPulse {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.35;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
+}
+
+@keyframes chatShimmerSweep {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(120%);
+  }
+}
+
+.chat-message {
+  animation: chatIn 0.25s ease-out both;
+}
+
+.chat-loading-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--brand);
+  animation: chatDotPulse 1.15s ease-in-out infinite;
+}
+
+.chat-loading-dot:nth-child(2) {
+  animation-delay: 0.14s;
+}
+
+.chat-loading-dot:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+.chat-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.chat-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    rgba(26, 122, 138, 0) 0%,
+    rgba(26, 122, 138, 0.07) 45%,
+    rgba(26, 122, 138, 0.12) 50%,
+    rgba(26, 122, 138, 0.07) 55%,
+    rgba(26, 122, 138, 0) 100%
+  );
+  animation: chatShimmerSweep 2s linear infinite;
+}
+
+.chat-timer {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
