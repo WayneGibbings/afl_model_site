@@ -1,5 +1,7 @@
 import type { ChatMessage } from "@/lib/genie-types";
 import { ResultTable } from "@/components/chat/ResultTable";
+import ReactMarkdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
 
 interface ChatMessageBubbleProps {
   message: ChatMessage;
@@ -49,7 +51,38 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
             : `card max-w-[95%] rounded-2xl rounded-bl-md px-4 py-3 text-sm text-[var(--foreground)] sm:max-w-[82%] ${isLoading ? "chat-shimmer" : ""}`
         }
       >
-        {message.text ? <p className="m-0 whitespace-pre-wrap leading-6">{message.text}</p> : null}
+        {message.text ? (
+          isUser ? (
+            <p className="m-0 whitespace-pre-wrap leading-6">{message.text}</p>
+          ) : (
+            <div className="space-y-3 leading-6">
+              <ReactMarkdown
+                remarkPlugins={[remarkBreaks]}
+                components={{
+                  p: ({ children }) => <p className="m-0">{children}</p>,
+                  ul: ({ children }) => <ul className="m-0 list-disc space-y-1 pl-5">{children}</ul>,
+                  ol: ({ children }) => <ol className="m-0 list-decimal space-y-1 pl-5">{children}</ol>,
+                  li: ({ children }) => <li>{children}</li>,
+                  a: ({ children, href }) => (
+                    <a
+                      className="text-[var(--brand)] underline underline-offset-2"
+                      href={href}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      {children}
+                    </a>
+                  ),
+                  code: ({ children }) => (
+                    <code className="rounded bg-[var(--surface-raised)] px-1 py-0.5 text-[0.95em]">{children}</code>
+                  ),
+                }}
+              >
+                {message.text}
+              </ReactMarkdown>
+            </div>
+          )
+        ) : null}
 
         {isLoading ? (
           <div className="mt-2 space-y-2">
@@ -61,12 +94,6 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
             <p className="m-0 text-xs text-[var(--muted)]">{statusLabel(message)}</p>
             <p className="chat-timer m-0">{formatElapsed(message.elapsedMs)}</p>
           </div>
-        ) : null}
-
-        {message.query ? (
-          <pre className="mt-3 overflow-x-auto rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] p-3 text-xs text-[var(--muted)]">
-            <code>{message.query}</code>
-          </pre>
         ) : null}
 
         {message.queryResult ? <ResultTable queryResult={message.queryResult} /> : null}
