@@ -380,6 +380,7 @@ async function fetchSiteSnapshotFromDatabricks(params: {
 export const genieProxy = onRequest(
   {
     region: REGION,
+    invoker: "public",
     timeoutSeconds: 120,
     maxInstances: 20,
     secrets: [DATABRICKS_HOST, DATABRICKS_TOKEN, GENIE_SPACE_ID],
@@ -536,6 +537,7 @@ export const genieProxy = onRequest(
 export const siteDataRefresh = onRequest(
   {
     region: REGION,
+    invoker: "public",
     timeoutSeconds: 180,
     maxInstances: 10,
     secrets: [DATABRICKS_HOST, DATABRICKS_TOKEN, DATABRICKS_HTTP_PATH, SITE_REFRESH_TOKEN],
@@ -611,6 +613,7 @@ export const siteDataRefresh = onRequest(
 export const siteDataLatest = onRequest(
   {
     region: REGION,
+    invoker: "public",
     timeoutSeconds: 60,
     maxInstances: 20,
   },
