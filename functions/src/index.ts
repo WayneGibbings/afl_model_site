@@ -19,6 +19,7 @@ import {
   siteSnapshotQueries,
 } from "./site-snapshot";
 import { z } from "zod";
+import { timingSafeEqual } from "crypto";
 
 const DATABRICKS_HOST = defineSecret("DATABRICKS_HOST");
 const DATABRICKS_TOKEN = defineSecret("DATABRICKS_TOKEN");
@@ -36,6 +37,11 @@ const RATE_LIMIT_RULES: Record<ProxyAction, { maxRequests: number; windowMs: num
 const REGION = "australia-southeast1";
 const SITE_CACHE_DOC_PATH = "site_cache/latest";
 const MAX_SITE_SNAPSHOT_BYTES = 900_000;
+const ALLOWED_ORIGINS = new Set([
+  "https://waynealytics-tips.gibbings.net",
+  "https://waynealytics-tips.web.app",
+  "https://waynealytics-tips.firebaseapp.com",
+]);
 
 type JsonResponse = unknown;
 
@@ -241,6 +247,33 @@ function normalizeRefreshToken(secretValue: string): string {
   return trimmed;
 }
 
+function constantTimeEquals(a: string, b: string): boolean {
+  const bufA = Buffer.from(a, "utf8");
+  const bufB = Buffer.from(b, "utf8");
+  if (bufA.length !== bufB.length) {
+    return false;
+  }
+  return timingSafeEqual(bufA, bufB);
+}
+
+function isAllowedOrigin(req: Request): boolean {
+  const origin = req.get("origin");
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    return true;
+  }
+  // Same-origin requests from some browsers omit Origin but include Referer
+  const referer = req.get("referer");
+  if (referer) {
+    try {
+      const refererOrigin = new URL(referer).origin;
+      return ALLOWED_ORIGINS.has(refererOrigin);
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
 function quoteEtag(snapshotVersion: string): string {
   return `"${snapshotVersion}"`;
 }
@@ -391,6 +424,16 @@ export const genieProxy = onRequest(
         error: {
           code: "METHOD_NOT_ALLOWED",
           message: "Use POST for /api/genie.",
+        },
+      });
+      return;
+    }
+
+    if (!isAllowedOrigin(req)) {
+      jsonNoStore(res, 403, {
+        error: {
+          code: "FORBIDDEN",
+          message: "Requests are only accepted from the application origin.",
         },
       });
       return;
@@ -556,7 +599,7 @@ export const siteDataRefresh = onRequest(
     try {
       const expectedToken = normalizeRefreshToken(SITE_REFRESH_TOKEN.value());
       const providedToken = readRefreshToken(req);
-      if (!providedToken || providedToken !== expectedToken) {
+      if (!providedToken || !constantTimeEquals(providedToken, expectedToken)) {
         jsonNoStore(res, 401, {
           error: {
             code: "UNAUTHORIZED",
