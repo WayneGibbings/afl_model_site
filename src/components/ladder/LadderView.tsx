@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { LadderTable } from "@/components/ladder/LadderTable";
+import { sortCurrentProjectionRows } from "@/lib/ladder";
 import type { LadderEntry } from "@/lib/types";
 
 interface LadderViewProps {
@@ -12,7 +13,10 @@ interface LadderViewProps {
 
 export function LadderView({ preseasonRows, currentRows, seasonStarted }: LadderViewProps) {
   const [mode, setMode] = useState<"preseason" | "current">(seasonStarted ? "current" : "preseason");
-  const rows = useMemo(() => (mode === "preseason" ? preseasonRows : currentRows), [currentRows, mode, preseasonRows]);
+  const rows = useMemo(
+    () => (mode === "preseason" ? preseasonRows : sortCurrentProjectionRows(currentRows)),
+    [currentRows, mode, preseasonRows],
+  );
 
   return (
     <section className="space-y-5">

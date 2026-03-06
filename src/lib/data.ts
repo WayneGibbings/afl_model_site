@@ -42,6 +42,15 @@ export function loadUpcomingPredictions(): Promise<UpcomingPrediction[]> {
   return loadJsonWithFallback<UpcomingPrediction[]>("upcoming-predictions.json");
 }
 
+export async function loadTipsPredictions(): Promise<UpcomingPrediction[]> {
+  const allPredictions = await loadOptionalJson("predictions.json");
+  if (Array.isArray(allPredictions)) {
+    return allPredictions as UpcomingPrediction[];
+  }
+
+  return loadUpcomingPredictions();
+}
+
 export function loadLadderPreseason(): Promise<LadderEntry[]> {
   return loadJsonWithFallback<LadderEntry[]>("ladder-preseason.json");
 }
@@ -61,7 +70,7 @@ export async function loadSiteSnapshot(): Promise<SiteSnapshot> {
   }
 
   const [upcomingPredictions, ladderPreseason, ladderCurrent, accuracy] = await Promise.all([
-    loadUpcomingPredictions(),
+    loadTipsPredictions(),
     loadLadderPreseason(),
     loadLadderCurrent(),
     loadAccuracy(),

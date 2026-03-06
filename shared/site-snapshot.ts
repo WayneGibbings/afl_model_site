@@ -13,6 +13,10 @@ export interface UpcomingPrediction {
   away_team: TeamKey;
   venue: string;
   predicted_winner: TeamKey;
+  actual_winner?: TeamKey | null;
+  actual_margin?: number | null;
+  tip_correct?: boolean | null;
+  margin_error?: number | null;
   home_win_probability: number;
   away_win_probability: number;
   predicted_margin: number;
@@ -107,6 +111,10 @@ const upcomingPredictionSchema = z.object({
   away_team: teamKeySchema,
   venue: z.string().min(1),
   predicted_winner: teamKeySchema,
+  actual_winner: teamKeySchema.nullable().optional(),
+  actual_margin: z.coerce.number().nullable().optional(),
+  tip_correct: z.boolean().nullable().optional(),
+  margin_error: z.coerce.number().nullable().optional(),
   home_win_probability: z.coerce.number().min(0).max(1),
   away_win_probability: z.coerce.number().min(0).max(1),
   predicted_margin: z.coerce.number(),
@@ -163,7 +171,7 @@ export interface RawSiteSnapshotInput {
 export const siteSnapshotQueries = {
   currentSeason: `SELECT MAX(season) AS season FROM dev_afl.afl_tipping.gold_predictions LIMIT 1`,
   upcomingPredictions: (season: number) => `
-    WITH unplayed AS (
+    WITH season_predictions AS (
       SELECT
         p.round,
         p.date,
@@ -174,9 +182,19 @@ export const siteSnapshotQueries = {
         p.away_team,
         p.venue,
         p.predicted_winner,
-        ROUND(p.home_win_probability, 3)              AS home_win_probability,
-        ROUND(1.0 - p.home_win_probability, 3)        AS away_win_probability,
-        ROUND(p.predicted_margin, 1)                  AS predicted_margin,
+        m.winner                                        AS actual_winner,
+        m.margin                                        AS actual_margin,
+        CASE
+          WHEN m.winner IS NULL THEN NULL
+          ELSE CAST(p.predicted_winner = m.winner AS BOOLEAN)
+        END                                             AS tip_correct,
+        CASE
+          WHEN m.margin IS NULL THEN NULL
+          ELSE ROUND(ABS(p.predicted_margin - m.margin), 1)
+        END                                             AS margin_error,
+        ROUND(p.home_win_probability, 3)                AS home_win_probability,
+        ROUND(1.0 - p.home_win_probability, 3)          AS away_win_probability,
+        ROUND(p.predicted_margin, 1)                    AS predicted_margin,
         p.home_elo,
         p.away_elo,
         p.elo_diff,
@@ -184,17 +202,14 @@ export const siteSnapshotQueries = {
           WHEN p.round = 'Opening Round' THEN 0
           WHEN p.round LIKE 'Round %'    THEN CAST(SUBSTR(p.round, 7) AS INT)
           ELSE 999
-        END                                           AS round_order
+        END                                             AS round_order
       FROM dev_afl.afl_tipping.gold_predictions p
+      LEFT JOIN dev_afl.afl_tipping.silver_matches m
+        ON  m.season = p.season
+        AND m.date = p.date
+        AND m.home_team = p.home_team
+        AND m.away_team = p.away_team
       WHERE p.season = ${season}
-        AND NOT EXISTS (
-          SELECT 1
-          FROM   dev_afl.afl_tipping.silver_matches m
-          WHERE  m.season    = p.season
-            AND  m.date      = p.date
-            AND  m.home_team = p.home_team
-            AND  m.away_team = p.away_team
-        )
     )
     SELECT
       u.round,
@@ -207,13 +222,17 @@ export const siteSnapshotQueries = {
       u.away_team,
       u.venue,
       u.predicted_winner,
+      u.actual_winner,
+      u.actual_margin,
+      u.tip_correct,
+      u.margin_error,
       u.home_win_probability,
       u.away_win_probability,
       u.predicted_margin,
       u.home_elo,
       u.away_elo,
       u.elo_diff
-    FROM unplayed u
+    FROM season_predictions u
     ORDER BY
       u.round_order,
       u.date,
@@ -547,6 +566,7 @@ export function buildSiteSnapshotPayload(input: RawSiteSnapshotInput): SiteSnaps
     home_team: mapTeamKey(row.home_team, "home_team"),
     away_team: mapTeamKey(row.away_team, "away_team"),
     predicted_winner: mapTeamKey(row.predicted_winner, "predicted_winner"),
+    actual_winner: mapTeamKey(row.actual_winner, "actual_winner", true),
   }));
 
   const normalizedLadderPreseason = input.rawLadderPreseason.map((row) => ({

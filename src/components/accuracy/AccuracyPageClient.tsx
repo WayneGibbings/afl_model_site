@@ -1,5 +1,6 @@
 "use client";
 
+import { InfoTooltip } from "@/components/shared/InfoTooltip";
 import { useLiveSiteSnapshot } from "@/lib/live-site-data";
 import type { SiteSnapshot } from "../../../shared/site-snapshot";
 
@@ -45,6 +46,7 @@ export function AccuracyPageClient({ initialSnapshot }: AccuracyPageClientProps)
         <StatCard
           label="MAE"
           value={data.mae.toFixed(1)}
+          infoText="Mean Absolute Error. Lower is better. It is the average gap between the predicted margin and the actual final margin."
           accent={{ bar: "var(--gold)", badge: "var(--gold-light)", text: "var(--gold-dark)" }}
           icon={
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -56,6 +58,7 @@ export function AccuracyPageClient({ initialSnapshot }: AccuracyPageClientProps)
         <StatCard
           label="Bits"
           value={data.bits.toFixed(1)}
+          infoText="Bits score measures how much confidence the model assigned to the actual winner. Higher is better, with stronger credit for being confidently right."
           accent={{ bar: "var(--brand-dark)", badge: "rgba(15, 58, 68, 0.08)", text: "var(--brand-dark)" }}
           icon={
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -106,11 +109,13 @@ export function AccuracyPageClient({ initialSnapshot }: AccuracyPageClientProps)
 function StatCard({
   label,
   value,
+  infoText,
   accent,
   icon,
 }: {
   label: string;
   value: string;
+  infoText?: string;
   accent: { bar: string; badge: string; text: string };
   icon: React.ReactNode;
 }) {
@@ -118,8 +123,9 @@ function StatCard({
     <div className="card relative overflow-hidden px-3 py-3 sm:px-5 sm:py-4" style={{ borderTop: `3px solid ${accent.bar}` }}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "var(--muted)" }}>
+          <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest mb-1 flex items-center" style={{ color: "var(--muted)" }}>
             {label}
+            {infoText ? <InfoTooltip label={`${label} explanation`} text={infoText} /> : null}
           </p>
           <p className="text-xl sm:text-2xl font-bold tracking-tight" style={{ color: "var(--foreground)" }}>
             {value}

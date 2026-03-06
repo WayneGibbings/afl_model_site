@@ -11,6 +11,10 @@ export interface UpcomingPrediction {
   away_team: TeamKey;
   venue: string;
   predicted_winner: TeamKey;
+  actual_winner?: TeamKey | null;
+  actual_margin?: number | null;
+  tip_correct?: boolean | null;
+  margin_error?: number | null;
   home_win_probability: number;
   away_win_probability: number;
   predicted_margin: number;

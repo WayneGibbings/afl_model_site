@@ -5,6 +5,7 @@ import Image from "next/image";
 import { teams, type TeamKey } from "@/config/teams";
 import { formatMarginPoints, formatPredictionDate, getPredictionChronologicalValue } from "@/lib/format";
 import type { UpcomingPrediction } from "@/lib/types";
+import { TipResultBadge } from "@/components/shared/TipResultBadge";
 import { RoundFilter } from "./RoundFilter";
 
 interface TipsTableProps {
@@ -133,6 +134,7 @@ function MatchCard({
   const isHomeTip = prediction.predicted_winner === prediction.home_team;
   const winProb = isHomeTip ? prediction.home_win_probability : prediction.away_win_probability;
   const winPct = Math.round(winProb * 100);
+  const isCompleted = prediction.actual_winner != null;
 
   return (
     <div className="match-card card overflow-clip">
@@ -233,6 +235,55 @@ function MatchCard({
           </p>
         </div>
       </div>
+
+      {isCompleted ? (
+        <div
+          className="mx-3 mb-3 rounded-lg px-3.5 py-3"
+          style={{
+            background: "var(--surface-raised)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <span
+              className="text-[10px] font-bold uppercase tracking-widest"
+              style={{ color: "var(--muted)" }}
+            >
+              Match Result
+            </span>
+            <TipResultBadge correct={prediction.tip_correct ?? null} />
+          </div>
+
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="mb-1 flex items-center gap-2">
+                <Image
+                  src={teams[prediction.actual_winner!].icon}
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="shrink-0"
+                />
+                <span className="text-sm font-bold" style={{ color: "var(--foreground)" }}>
+                  {teams[prediction.actual_winner!].name}
+                </span>
+              </div>
+              <p className="text-xs" style={{ color: "var(--muted)" }}>
+                Actual winner
+              </p>
+            </div>
+
+            <div className="text-right">
+              <p className="text-sm font-bold tabular-nums" style={{ color: "var(--foreground)" }}>
+                {prediction.actual_margin != null ? formatMarginPoints(prediction.actual_margin) : "Final margin n/a"}
+              </p>
+              <p className="text-xs tabular-nums" style={{ color: "var(--muted)" }}>
+                {prediction.margin_error != null ? `MAE ${prediction.margin_error.toFixed(1)}` : "\u00A0"}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

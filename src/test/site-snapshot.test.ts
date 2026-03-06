@@ -13,6 +13,10 @@ describe("site snapshot helpers", () => {
           away_team: "Brisbane Lions",
           venue: "MCG",
           predicted_winner: "Geelong Cats",
+          actual_winner: "Brisbane Lions",
+          actual_margin: 9,
+          tip_correct: false,
+          margin_error: 23.2,
           home_win_probability: 0.61,
           away_win_probability: 0.39,
           predicted_margin: 14.2,
@@ -48,6 +52,10 @@ describe("site snapshot helpers", () => {
 
     expect(payload.upcomingPredictions[0].home_team).toBe("geelong");
     expect(payload.upcomingPredictions[0].away_team).toBe("brisbane");
+    expect(payload.upcomingPredictions[0].actual_winner).toBe("brisbane");
+    expect(payload.upcomingPredictions[0].actual_margin).toBe(9);
+    expect(payload.upcomingPredictions[0].tip_correct).toBe(false);
+    expect(payload.upcomingPredictions[0].margin_error).toBe(23.2);
     expect(payload.ladderPreseason[0].team).toBe("geelong");
     expect(payload.ladderCurrent[0].team).toBe("brisbane");
     expect(payload.accuracy.as_at_round).toBe("Pre-season");
