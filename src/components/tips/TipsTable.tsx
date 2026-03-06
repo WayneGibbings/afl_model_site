@@ -349,8 +349,8 @@ function TeamSide({
       }`}
       style={tippedStyle}
     >
-      {logoEl}
       {textEl}
+      {logoEl}
     </div>
   );
 }
