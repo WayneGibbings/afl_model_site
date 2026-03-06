@@ -68,6 +68,30 @@ export interface AccuracyData {
 }
 
 const teamKeySchema = z.enum(teamKeys);
+const nullableBooleanishSchema = z.preprocess((value) => {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "true") {
+      return true;
+    }
+    if (normalized === "false") {
+      return false;
+    }
+  }
+
+  if (value === 1 || value === "1") {
+    return true;
+  }
+  if (value === 0 || value === "0") {
+    return false;
+  }
+
+  return value;
+}, z.boolean().nullable().optional());
 
 const accuracyGameSchema = z.object({
   date: z.string().min(1),
@@ -113,7 +137,7 @@ const upcomingPredictionSchema = z.object({
   predicted_winner: teamKeySchema,
   actual_winner: teamKeySchema.nullable().optional(),
   actual_margin: z.coerce.number().nullable().optional(),
-  tip_correct: z.boolean().nullable().optional(),
+  tip_correct: nullableBooleanishSchema,
   margin_error: z.coerce.number().nullable().optional(),
   home_win_probability: z.coerce.number().min(0).max(1),
   away_win_probability: z.coerce.number().min(0).max(1),
