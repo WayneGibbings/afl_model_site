@@ -252,8 +252,8 @@ body::before {
 
 .info-tooltip__popup {
   position: absolute;
-  left: 50%;
-  bottom: calc(100% + 0.5rem);
+  left: 0;
+  top: calc(100% + 0.5rem);
   z-index: 100;
   width: min(17rem, 70vw);
   padding: 0.65rem 0.75rem;
@@ -271,7 +271,7 @@ body::before {
     0 2px 8px rgba(9, 29, 35, 0.12);
   opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, 0.25rem);
+  transform: translateY(-0.25rem);
   transition:
     opacity 0.15s ease,
     transform 0.15s ease;
@@ -280,20 +280,20 @@ body::before {
 .info-tooltip__popup::after {
   content: "";
   position: absolute;
-  left: 50%;
-  top: 100%;
+  left: 0.45rem;
+  bottom: 100%;
   width: 0.6rem;
   height: 0.6rem;
   background: rgba(7, 26, 32, 0.96);
-  border-right: 1px solid rgba(12, 30, 37, 0.14);
-  border-bottom: 1px solid rgba(12, 30, 37, 0.14);
-  transform: translate(-50%, -50%) rotate(45deg);
+  border-left: 1px solid rgba(12, 30, 37, 0.14);
+  border-top: 1px solid rgba(12, 30, 37, 0.14);
+  transform: translate(0, 50%) rotate(45deg);
 }
 
 .info-tooltip:hover .info-tooltip__popup,
 .info-tooltip:focus-within .info-tooltip__popup {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: translateY(0);
 }
 
 .chat-loading-dot:nth-child(3) {
