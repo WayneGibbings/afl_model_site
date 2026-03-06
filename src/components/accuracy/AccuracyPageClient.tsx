@@ -120,7 +120,7 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="card relative overflow-hidden px-3 py-3 sm:px-5 sm:py-4" style={{ borderTop: `3px solid ${accent.bar}` }}>
+    <div className="card relative px-3 py-3 sm:px-5 sm:py-4" style={{ borderTop: `3px solid ${accent.bar}` }}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest mb-1 flex items-center" style={{ color: "var(--muted)" }}>
