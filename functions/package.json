@@ -1,12 +1,12 @@
 {
   "name": "afl-site-functions",
   "private": true,
-  "main": "lib/functions/src/index.js",
+  "main": "lib/index.js",
   "engines": {
     "node": "22"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "node -e \"require('fs').rmSync('lib', { recursive: true, force: true })\" && tsc",
     "serve": "firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions"
   },

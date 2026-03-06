@@ -4,12 +4,12 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "lib",
-    "rootDir": "..",
+    "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true
   },
-  "include": ["src", "../shared/**/*.ts", "../src/lib/databricks-utils.ts"]
+  "include": ["src/**/*.ts"]
 }

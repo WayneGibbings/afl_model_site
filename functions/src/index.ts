@@ -11,13 +11,13 @@ import {
   RequestValidationError,
   validateProxyRequestBody,
 } from "./genie-proxy-utils";
-import { normaliseHost, warehouseIdFromHttpPath } from "../../src/lib/databricks-utils";
+import { normaliseHost, warehouseIdFromHttpPath } from "./databricks-utils";
 import {
   buildSiteSnapshotPayload,
   createSiteSnapshot,
   siteSnapshotBytes,
   siteSnapshotQueries,
-} from "../../shared/site-snapshot";
+} from "./site-snapshot";
 import { z } from "zod";
 
 const DATABRICKS_HOST = defineSecret("DATABRICKS_HOST");
