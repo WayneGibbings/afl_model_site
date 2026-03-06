@@ -2,7 +2,7 @@
 
 import { LadderView } from "@/components/ladder/LadderView";
 import { useLiveSiteSnapshot } from "@/lib/live-site-data";
-import type { SiteSnapshot } from "../../../shared/site-snapshot";
+import type { SiteSnapshot } from "../../../functions/src/site-snapshot";
 
 interface LadderPageClientProps {
   initialSnapshot: SiteSnapshot;

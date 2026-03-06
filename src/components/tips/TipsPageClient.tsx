@@ -4,7 +4,7 @@ import { SeasonSummaryBar } from "@/components/tips/SeasonSummaryBar";
 import { TipsTable } from "@/components/tips/TipsTable";
 import { useLiveSiteSnapshot } from "@/lib/live-site-data";
 import { getSeasonSummary } from "@/lib/tips";
-import type { SiteSnapshot } from "../../../shared/site-snapshot";
+import type { SiteSnapshot } from "../../../functions/src/site-snapshot";
 
 interface TipsPageClientProps {
   initialSnapshot: SiteSnapshot;

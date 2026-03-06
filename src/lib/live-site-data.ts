@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { SiteSnapshot } from "../../shared/site-snapshot";
+import type { SiteSnapshot } from "../../functions/src/site-snapshot";
 
 export async function fetchLatestSiteSnapshot(
   currentVersion: string,

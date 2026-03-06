@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSiteSnapshotPayload, createSiteSnapshot, hashSiteSnapshotPayload } from "../../shared/site-snapshot";
+import { buildSiteSnapshotPayload, createSiteSnapshot, hashSiteSnapshotPayload } from "../../functions/src/site-snapshot";
 
 describe("site snapshot helpers", () => {
   it("normalizes databricks rows into the site snapshot shape", () => {

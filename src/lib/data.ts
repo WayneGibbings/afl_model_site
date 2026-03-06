@@ -1,7 +1,7 @@
 import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import type { AccuracyData, LadderEntry, UpcomingPrediction } from "@/lib/types";
-import { createSiteSnapshot, parseSiteSnapshot, type SiteSnapshot } from "../../shared/site-snapshot";
+import { createSiteSnapshot, parseSiteSnapshot, type SiteSnapshot } from "../../functions/src/site-snapshot";
 
 async function fileExists(filePath: string): Promise<boolean> {
   try {

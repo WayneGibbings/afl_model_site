@@ -2,7 +2,7 @@
 
 import { useInfoReveal } from "@/components/shared/InfoTooltip";
 import { useLiveSiteSnapshot } from "@/lib/live-site-data";
-import type { SiteSnapshot } from "../../../shared/site-snapshot";
+import type { SiteSnapshot } from "../../../functions/src/site-snapshot";
 
 interface AccuracyPageClientProps {
   initialSnapshot: SiteSnapshot;

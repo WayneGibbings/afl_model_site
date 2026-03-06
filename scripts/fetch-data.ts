@@ -1,8 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
-import { normaliseHost, warehouseIdFromHttpPath } from "../src/lib/databricks-utils";
-import { buildSiteSnapshotPayload, createSiteSnapshot, siteSnapshotQueries } from "../shared/site-snapshot";
+import { normaliseHost, warehouseIdFromHttpPath } from "../functions/src/databricks-utils";
+import { buildSiteSnapshotPayload, createSiteSnapshot, siteSnapshotQueries } from "../functions/src/site-snapshot";
 
 const statementResponseSchema = z.object({
   statement_id: z.string(),
