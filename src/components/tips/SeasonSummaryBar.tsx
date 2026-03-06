@@ -1,5 +1,5 @@
 import type { SeasonSummary } from "@/lib/types";
-import { InfoTooltip } from "@/components/shared/InfoTooltip";
+import { useInfoReveal } from "@/components/shared/InfoTooltip";
 
 interface SeasonSummaryBarProps {
   summary: SeasonSummary;
@@ -69,6 +69,8 @@ function SummaryCard({
   accent: { bar: string; badge: string; text: string };
   icon: React.ReactNode;
 }) {
+  const info = useInfoReveal({ label, text: infoText ?? "", accentColor: accent.bar });
+
   return (
     <div
       className="card relative overflow-hidden px-3 py-3 sm:px-5 sm:py-4"
@@ -81,7 +83,7 @@ function SummaryCard({
             style={{ color: "var(--muted)" }}
           >
             {label}
-            {infoText ? <InfoTooltip label={`${label} explanation`} text={infoText} /> : null}
+            {infoText ? info.button : null}
           </p>
           <p className="text-xl sm:text-2xl font-bold tracking-tight" style={{ color: "var(--foreground)" }}>
             {value}
@@ -94,6 +96,7 @@ function SummaryCard({
           {icon}
         </span>
       </div>
+      {infoText ? info.panel : null}
     </div>
   );
 }

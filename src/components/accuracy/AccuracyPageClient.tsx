@@ -1,6 +1,6 @@
 "use client";
 
-import { InfoTooltip } from "@/components/shared/InfoTooltip";
+import { useInfoReveal } from "@/components/shared/InfoTooltip";
 import { useLiveSiteSnapshot } from "@/lib/live-site-data";
 import type { SiteSnapshot } from "../../../shared/site-snapshot";
 
@@ -119,13 +119,15 @@ function StatCard({
   accent: { bar: string; badge: string; text: string };
   icon: React.ReactNode;
 }) {
+  const info = useInfoReveal({ label, text: infoText ?? "", accentColor: accent.bar });
+
   return (
-    <div className="card relative px-3 py-3 sm:px-5 sm:py-4" style={{ borderTop: `3px solid ${accent.bar}` }}>
+    <div className="card relative overflow-hidden px-3 py-3 sm:px-5 sm:py-4" style={{ borderTop: `3px solid ${accent.bar}` }}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest mb-1 flex items-center" style={{ color: "var(--muted)" }}>
             {label}
-            {infoText ? <InfoTooltip label={`${label} explanation`} text={infoText} /> : null}
+            {infoText ? info.button : null}
           </p>
           <p className="text-xl sm:text-2xl font-bold tracking-tight" style={{ color: "var(--foreground)" }}>
             {value}
@@ -138,6 +140,7 @@ function StatCard({
           {icon}
         </span>
       </div>
+      {infoText ? info.panel : null}
     </div>
   );
 }
