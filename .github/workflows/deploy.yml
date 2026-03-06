@@ -4,9 +4,6 @@ on:
   push:
     branches: [main]
 
-  repository_dispatch:
-    types: [data-refresh]
-
   workflow_dispatch:
 
 jobs:
@@ -52,12 +49,16 @@ jobs:
         run: |
           printf '%s' "$DATABRICKS_HOST" | npx firebase-tools functions:secrets:set DATABRICKS_HOST --project "$FIREBASE_PROJECT_ID" --data-file=- --force
           printf '%s' "$DATABRICKS_TOKEN" | npx firebase-tools functions:secrets:set DATABRICKS_TOKEN --project "$FIREBASE_PROJECT_ID" --data-file=- --force
+          printf '%s' "$DATABRICKS_HTTP_PATH" | npx firebase-tools functions:secrets:set DATABRICKS_HTTP_PATH --project "$FIREBASE_PROJECT_ID" --data-file=- --force
           printf '%s' "$GENIE_SPACE_ID" | npx firebase-tools functions:secrets:set GENIE_SPACE_ID --project "$FIREBASE_PROJECT_ID" --data-file=- --force
+          printf '%s' "$SITE_REFRESH_TOKEN" | npx firebase-tools functions:secrets:set SITE_REFRESH_TOKEN --project "$FIREBASE_PROJECT_ID" --data-file=- --force
         env:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_HTTP_PATH: ${{ secrets.DATABRICKS_HTTP_PATH }}
           GENIE_SPACE_ID: ${{ secrets.GENIE_SPACE_ID }}
+          SITE_REFRESH_TOKEN: ${{ secrets.SITE_REFRESH_TOKEN }}
 
       - name: Deploy Hosting and Functions
         run: npx firebase-tools deploy --only hosting,functions --project "$FIREBASE_PROJECT_ID" --non-interactive

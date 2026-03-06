@@ -12,6 +12,14 @@ const devRewrites =
               source: "/api/genie",
               destination: `http://127.0.0.1:5001/${projectId}/${region}/genieProxy`,
             },
+            {
+              source: "/api/site-data/latest",
+              destination: `http://127.0.0.1:5001/${projectId}/${region}/siteDataLatest`,
+            },
+            {
+              source: "/api/site-data/refresh",
+              destination: `http://127.0.0.1:5001/${projectId}/${region}/siteDataRefresh`,
+            },
           ];
         },
       }

@@ -14,6 +14,20 @@
           "functionId": "genieProxy",
           "region": "australia-southeast1"
         }
+      },
+      {
+        "source": "/api/site-data/latest",
+        "function": {
+          "functionId": "siteDataLatest",
+          "region": "australia-southeast1"
+        }
+      },
+      {
+        "source": "/api/site-data/refresh",
+        "function": {
+          "functionId": "siteDataRefresh",
+          "region": "australia-southeast1"
+        }
       }
     ]
   },
