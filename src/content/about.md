@@ -55,7 +55,7 @@ Some inputs were intentionally left out of the model:
 ## Feature Glossary
 
 All features are computed from the home team's perspective (positive = home team advantage).
-EWMA features use a half-life of 5 games, computed strictly from games **prior** to the current match (no data leakage).
+Exponentially Weighted Moving Average (EWMA) features use a half-life of 5 games, computed strictly from games **prior** to the current match (no data leakage).
 
 ### Elo Features
 
