@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { loadSiteSnapshot } from "@/lib/data";
 
 export async function Footer() {
@@ -40,6 +41,8 @@ export async function Footer() {
           </p>
           <span className="hidden sm:inline text-white/20">·</span>
           <p className="text-xs text-white/30">Data updated {updatedAt} {tzAbbr}</p>
+          <span className="hidden sm:inline text-white/20">·</span>
+          <Link href="/privacy" className="text-xs text-white/30 hover:text-white/60 transition-colors">Privacy</Link>
         </div>
 
         {/* Social links */}
