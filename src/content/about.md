@@ -7,7 +7,7 @@ This model uses a two-layer forecasting system.
 Layer 1 is an Elo ratings engine that estimates each team's underlying strength.
 Layer 2 is an XGBoost regression model that combines those Elo ratings with match-level context to produce a predicted margin and win probability.
 
-The goal is to produce independent, repeatable AFL forecasts that can be benchmarked against the Squiggle tipping ecosystem.
+The goal is to produce independent, repeatable AFL forecasts that can be benchmarked against the [Squiggle](https://squiggle.com.au/) tipping ecosystem.
 
 ## Layer 1: Elo Ratings
 
@@ -50,7 +50,7 @@ Some inputs were intentionally left out in MVP:
 
 - Mean Absolute Error (MAE) below 28 points.
 - Tipping accuracy above 67%.
-- Ongoing benchmarking against the Squiggle tipping leaderboard.
+- Ongoing benchmarking against the [Squiggle](https://squiggle.com.au/) tipping leaderboard.
 
 ## Feature Glossary
 
@@ -118,7 +118,7 @@ Differentials (home − away) of EWMA game-style statistics.
 
 ## Acknowledgements
 
-- Squiggle community and API.
+- [Squiggle](https://squiggle.com.au/) community and API.
 - Ryall, R. & Bedford, A. (2010). *An optimized ratings-based model for forecasting Australian Rules football*. International Journal of Forecasting, 26(3), 511-517.
 - Betfair AFL modelling tutorial series.
 
