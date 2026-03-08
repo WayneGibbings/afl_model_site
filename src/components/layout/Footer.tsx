@@ -1,4 +1,22 @@
-export function Footer() {
+import { loadSiteSnapshot } from "@/lib/data";
+
+export async function Footer() {
+  const snapshot = await loadSiteSnapshot();
+  const date = new Date(snapshot.generatedAt);
+  const melbourneOptions = { timeZone: "Australia/Melbourne" } as const;
+  const updatedAt = date.toLocaleString("en-AU", {
+    ...melbourneOptions,
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+  const tzAbbr = new Intl.DateTimeFormat("en-AU", { ...melbourneOptions, timeZoneName: "short" })
+    .formatToParts(date)
+    .find((p) => p.type === "timeZoneName")?.value ?? "AEST";
+
   return (
     <footer
       className="relative"
@@ -16,9 +34,13 @@ export function Footer() {
       />
 
       <div className="mx-auto max-w-6xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <p className="text-sm text-white/40 font-medium">
-          &copy; {new Date().getFullYear()} Waynealytics
-        </p>
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <p className="text-sm text-white/40 font-medium">
+            &copy; {new Date().getFullYear()} Waynealytics
+          </p>
+          <span className="hidden sm:inline text-white/20">·</span>
+          <p className="text-xs text-white/30">Data updated {updatedAt} {tzAbbr}</p>
+        </div>
 
         {/* Social links */}
         <div className="flex items-center gap-4">

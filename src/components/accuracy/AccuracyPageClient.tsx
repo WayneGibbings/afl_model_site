@@ -57,7 +57,7 @@ export function AccuracyPageClient({ initialSnapshot }: AccuracyPageClientProps)
         />
         <StatCard
           label="Bits"
-          value={data.bits.toFixed(1)}
+          value={data.bits.toFixed(2)}
           infoText="Bits score measures how much confidence the model assigned to the actual winner. Higher is better, with stronger credit for being confidently right."
           accent={{ bar: "var(--brand-dark)", badge: "rgba(15, 58, 68, 0.08)", text: "var(--brand-dark)" }}
           icon={
