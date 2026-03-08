@@ -12,7 +12,7 @@ npm run dev
 
 ### Genie chat local development
 
-The `/chat` page calls a Firebase Function proxy at `/api/genie`.
+The `/ask` page calls a Firebase Function proxy at `/api/genie`.
 
 Run both app and emulators:
 

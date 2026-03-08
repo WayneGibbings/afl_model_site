@@ -206,15 +206,15 @@ export default function ChatPage() {
         </summary>
 
         <div className="border-t border-[var(--border)] px-4 py-5 sm:px-6 text-sm text-[var(--muted)] space-y-6">
-          <p>All features are computed from the home team's perspective (positive = home team advantage). EWMA features use a half-life of 5 games, computed strictly from games <strong>prior</strong> to the current match (no data leakage).</p>
+          <p>All features are computed from the home team&rsquo;s perspective (positive = home team advantage). EWMA features use a half-life of 5 games, computed strictly from games <strong>prior</strong> to the current match (no data leakage).</p>
 
           <div className="space-y-2">
             <h3 className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--foreground)]">Elo Features</h3>
             <table className="data-table w-full text-xs">
               <thead><tr><th>Feature</th><th>Description</th></tr></thead>
               <tbody>
-                <tr><td><code>elo_home</code></td><td>Home team's Elo rating before the match. Initialised at 1500; decays 55% toward the mean between seasons. K-factor 28 regular season, 36 finals.</td></tr>
-                <tr><td><code>elo_away</code></td><td>Away team's Elo rating before the match. Same system as <code>elo_home</code>.</td></tr>
+                <tr><td><code>elo_home</code></td><td>Home team&rsquo;s Elo rating before the match. Initialised at 1500; decays 55% toward the mean between seasons. K-factor 28 regular season, 36 finals.</td></tr>
+                <tr><td><code>elo_away</code></td><td>Away team&rsquo;s Elo rating before the match. Same system as <code>elo_home</code>.</td></tr>
                 <tr><td><code>elo_diff</code></td><td><code>elo_home − elo_away</code>. Zero means evenly matched; positive means the home team is rated higher.</td></tr>
                 <tr><td><code>venue_hga</code></td><td>Home ground advantage at this venue in Elo points. Default 20 points when unknown.</td></tr>
               </tbody>

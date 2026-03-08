@@ -79,7 +79,7 @@ export function useLiveSiteSnapshot(initialSnapshot: SiteSnapshot): SiteSnapshot
 
   useEffect(() => {
     writeCachedSnapshot(snapshot);
-  }, [snapshot.snapshotVersion]);
+  }, [snapshot]);
 
   return snapshot;
 }
