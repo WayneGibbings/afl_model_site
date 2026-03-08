@@ -8,7 +8,7 @@ export default async function AboutPage() {
   const filePath = path.join(process.cwd(), "src/content/about.md");
   const file = await fs.readFile(filePath, "utf-8");
   const { content } = matter(file);
-  const rendered = await remark().use(html).process(content);
+  const rendered = await remark().use(html, { sanitize: false }).process(content);
 
   return (
     <div className="space-y-6">
