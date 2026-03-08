@@ -120,7 +120,7 @@ Differentials (home − away) of EWMA game-style statistics.
 
 - [Squiggle](https://squiggle.com.au/) community and API.
 - Ryall, R. & Bedford, A. (2010). *An optimized ratings-based model for forecasting Australian Rules football*. International Journal of Forecasting, 26(3), 511-517.
-- Betfair AFL modelling tutorial series.
+- [Betfair AFL modelling tutorial series](https://betfair-datascientists.github.io/modelling/AFLmodellingPython/).
 
 ## Two-Layer Flow
 
