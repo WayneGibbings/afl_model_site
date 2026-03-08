@@ -40,7 +40,7 @@ The model output is predicted margin, and win probability is derived from that m
 
 ## What's Deliberately Excluded
 
-Some inputs were intentionally left out in MVP:
+Some inputs were intentionally left out of the model:
 
 - **Bookmaker odds**: excluded to preserve model independence. Using odds as a feature would mostly proxy the betting market instead of testing genuine forecasting capability.
 - **Individual player statistics**: team-level aggregates are more robust and available earlier; player-level inputs are highly sensitive to late team-sheet changes.
