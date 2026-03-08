@@ -3,14 +3,15 @@ import { useInfoReveal } from "@/components/shared/InfoTooltip";
 
 interface SeasonSummaryBarProps {
   summary: SeasonSummary;
+  isLoading?: boolean;
 }
 
-export function SeasonSummaryBar({ summary }: SeasonSummaryBarProps) {
+export function SeasonSummaryBar({ summary, isLoading }: SeasonSummaryBarProps) {
   return (
     <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       <SummaryCard
         label="Tips Correct"
-        value={`${summary.tipsCorrect} / ${summary.totalTips}`}
+        value={isLoading ? "—" : `${summary.tipsCorrect} / ${summary.totalTips}`}
         accent={{ bar: "var(--brand)", badge: "rgba(26, 122, 138, 0.1)", text: "var(--brand)" }}
         icon={
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -21,7 +22,7 @@ export function SeasonSummaryBar({ summary }: SeasonSummaryBarProps) {
       />
       <SummaryCard
         label="Accuracy"
-        value={`${summary.accuracyPct.toFixed(1)}%`}
+        value={isLoading ? "—" : `${summary.accuracyPct.toFixed(1)}%`}
         accent={{ bar: "var(--success)", badge: "rgba(22, 163, 74, 0.1)", text: "var(--success)" }}
         icon={
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -31,7 +32,7 @@ export function SeasonSummaryBar({ summary }: SeasonSummaryBarProps) {
       />
       <SummaryCard
         label="MAE"
-        value={summary.mae.toFixed(1)}
+        value={isLoading ? "—" : summary.mae.toFixed(1)}
         infoText="Mean Absolute Error. Lower is better. It is the average gap between the predicted margin and the actual final margin."
         accent={{ bar: "var(--gold)", badge: "var(--gold-light)", text: "var(--gold-dark)" }}
         icon={
@@ -43,7 +44,7 @@ export function SeasonSummaryBar({ summary }: SeasonSummaryBarProps) {
       />
       <SummaryCard
         label="Bits"
-        value={summary.bits.toFixed(2)}
+        value={isLoading ? "—" : summary.bits.toFixed(2)}
         infoText="Bits score measures how much confidence the model assigned to the actual winner. Higher is better, with stronger credit for being confidently right."
         accent={{ bar: "var(--brand-dark)", badge: "rgba(15, 58, 68, 0.08)", text: "var(--brand-dark)" }}
         icon={

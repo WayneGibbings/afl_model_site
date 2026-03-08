@@ -9,7 +9,7 @@ interface LadderPageClientProps {
 }
 
 export function LadderPageClient({ initialSnapshot }: LadderPageClientProps) {
-  const snapshot = useLiveSiteSnapshot(initialSnapshot);
+  const { snapshot } = useLiveSiteSnapshot(initialSnapshot);
   const seasonStarted = snapshot.accuracy.total_tips > 0;
 
   return (

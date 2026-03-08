@@ -11,7 +11,7 @@ interface TipsPageClientProps {
 }
 
 export function TipsPageClient({ initialSnapshot }: TipsPageClientProps) {
-  const snapshot = useLiveSiteSnapshot(initialSnapshot);
+  const { snapshot, isLoading } = useLiveSiteSnapshot(initialSnapshot);
   const summary = getSeasonSummary(snapshot.accuracy);
 
   return (
@@ -19,7 +19,7 @@ export function TipsPageClient({ initialSnapshot }: TipsPageClientProps) {
       <header className="page-header">
         <h1 className="page-title">Tips</h1>
       </header>
-      {snapshot.accuracy.total_tips > 0 ? <SeasonSummaryBar summary={summary} /> : null}
+      {snapshot.accuracy.total_tips > 0 ? <SeasonSummaryBar summary={summary} isLoading={isLoading} /> : null}
       <TipsTable predictions={snapshot.upcomingPredictions} season={snapshot.season} />
     </div>
   );

@@ -7,7 +7,7 @@ const SNAPSHOT_CACHE_KEY = "site-snapshot-cache";
 
 function readCachedSnapshot(): SiteSnapshot | null {
   try {
-    const raw = sessionStorage.getItem(SNAPSHOT_CACHE_KEY);
+    const raw = localStorage.getItem(SNAPSHOT_CACHE_KEY);
     if (!raw) return null;
     return JSON.parse(raw) as SiteSnapshot;
   } catch {
@@ -17,7 +17,7 @@ function readCachedSnapshot(): SiteSnapshot | null {
 
 function writeCachedSnapshot(snapshot: SiteSnapshot): void {
   try {
-    sessionStorage.setItem(SNAPSHOT_CACHE_KEY, JSON.stringify(snapshot));
+    localStorage.setItem(SNAPSHOT_CACHE_KEY, JSON.stringify(snapshot));
   } catch {
     // Storage full or unavailable — not critical.
   }
@@ -52,11 +52,19 @@ export async function fetchLatestSiteSnapshot(
   return (await response.json()) as SiteSnapshot;
 }
 
-export function useLiveSiteSnapshot(initialSnapshot: SiteSnapshot): SiteSnapshot {
+export function useLiveSiteSnapshot(initialSnapshot: SiteSnapshot): {
+  snapshot: SiteSnapshot;
+  isLoading: boolean;
+} {
   const [snapshot, setSnapshot] = useState(() => {
     if (typeof window === "undefined") return initialSnapshot;
     const cached = readCachedSnapshot();
     return cached ? pickNewest(cached, initialSnapshot) : initialSnapshot;
+  });
+
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return readCachedSnapshot() === null;
   });
 
   useEffect(() => {
@@ -64,14 +72,16 @@ export function useLiveSiteSnapshot(initialSnapshot: SiteSnapshot): SiteSnapshot
 
     void fetchLatestSiteSnapshot(snapshot.snapshotVersion, controller.signal)
       .then((latestSnapshot) => {
-        if (!latestSnapshot || latestSnapshot.snapshotVersion === snapshot.snapshotVersion) {
-          return;
+        if (latestSnapshot && latestSnapshot.snapshotVersion !== snapshot.snapshotVersion) {
+          writeCachedSnapshot(latestSnapshot);
+          setSnapshot(latestSnapshot);
         }
-        writeCachedSnapshot(latestSnapshot);
-        setSnapshot(latestSnapshot);
       })
       .catch(() => {
         // Keep bootstrap data on transient runtime failures.
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
 
     return () => controller.abort();
@@ -81,5 +91,5 @@ export function useLiveSiteSnapshot(initialSnapshot: SiteSnapshot): SiteSnapshot
     writeCachedSnapshot(snapshot);
   }, [snapshot]);
 
-  return snapshot;
+  return { snapshot, isLoading };
 }
