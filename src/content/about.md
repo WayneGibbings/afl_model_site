@@ -59,45 +59,60 @@ EWMA features use a half-life of 5 games, computed strictly from games **prior**
 
 ### Elo Features
 
-| Feature | Description |
-|---------|-------------|
-| `elo_home` | Home team's Elo rating before the match. Initialised at 1500; decays 55% toward the mean (1500) between seasons. Updated each game using a margin-of-victory weighted K-factor (28 regular season, 36 finals). |
-| `elo_away` | Away team's Elo rating before the match. Same system as `elo_home`. |
-| `elo_diff` | `elo_home − elo_away`. A direct measure of relative team strength entering the match. Zero means evenly matched; positive means the home team is rated higher. |
-| `venue_hga` | Home ground advantage applied at this venue for this match, in Elo points. Derived from the Elo system's `applied_hga` field. Default 20 points when unknown. |
+<table>
+<thead><tr><th>Feature</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>elo_home</code></td><td>Home team's Elo rating before the match. Initialised at 1500; decays 55% toward the mean (1500) between seasons. Updated each game using a margin-of-victory weighted K-factor (28 regular season, 36 finals).</td></tr>
+<tr><td><code>elo_away</code></td><td>Away team's Elo rating before the match. Same system as <code>elo_home</code>.</td></tr>
+<tr><td><code>elo_diff</code></td><td><code>elo_home − elo_away</code>. A direct measure of relative team strength entering the match. Zero means evenly matched; positive means the home team is rated higher.</td></tr>
+<tr><td><code>venue_hga</code></td><td>Home ground advantage applied at this venue for this match, in Elo points. Derived from the Elo system's <code>applied_hga</code> field. Default 20 points when unknown.</td></tr>
+</tbody>
+</table>
 
 ### Form Features
 
 All form features are **differentials** (home − away) of EWMA signals with a 5-game half-life.
 
-| Feature | Description |
-|---------|-------------|
-| `form_margin_last5` | Differential of each team's EWMA scoring margin per game. Positive means the home team has been winning by larger margins recently. |
-| `form_win_pct_last5` | Differential of each team's EWMA win rate (1.0 = win, 0.5 = draw, 0.0 = loss). Positive means the home team has been winning more frequently. |
+<table>
+<thead><tr><th>Feature</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>form_margin_last5</code></td><td>Differential of each team's EWMA scoring margin per game. Positive means the home team has been winning by larger margins recently.</td></tr>
+<tr><td><code>form_win_pct_last5</code></td><td>Differential of each team's EWMA win rate (1.0 = win, 0.5 = draw, 0.0 = loss). Positive means the home team has been winning more frequently.</td></tr>
+</tbody>
+</table>
 
 ### Game Style Features
 
 Differentials (home − away) of EWMA game-style statistics.
 
-| Feature | Description |
-|---------|-------------|
-| `rolling_pct_diff` | Differential of each team's EWMA kicking efficiency: `goals / (goals + behinds)`. Measures scoring accuracy. |
-| `i50_diff` | Differential of each team's EWMA inside-50s per game. Measures how often teams are entering the forward 50. |
-| `r50_efficiency` | Differential of each team's EWMA rebound-50 efficiency: `rebound_50s / inside_50s`. Measures defensive conversion of opposition forward entries. |
-| `contested_possession_diff` | Differential of each team's EWMA contested possessions per game. Measures physical dominance at the contest. |
+<table>
+<thead><tr><th>Feature</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>rolling_pct_diff</code></td><td>Differential of each team's EWMA kicking efficiency: <code>goals / (goals + behinds)</code>. Measures scoring accuracy.</td></tr>
+<tr><td><code>i50_diff</code></td><td>Differential of each team's EWMA inside-50s per game. Measures how often teams are entering the forward 50.</td></tr>
+<tr><td><code>r50_efficiency</code></td><td>Differential of each team's EWMA rebound-50 efficiency: <code>rebound_50s / inside_50s</code>. Measures defensive conversion of opposition forward entries.</td></tr>
+<tr><td><code>contested_possession_diff</code></td><td>Differential of each team's EWMA contested possessions per game. Measures physical dominance at the contest.</td></tr>
+</tbody>
+</table>
 
 ### Contextual Features
 
-| Feature | Description |
-|---------|-------------|
-| `days_rest_diff` | `home_days_rest − away_days_rest`. Positive means the home team has had more recovery time. Default 7 days for the first game of the season. |
-| `completed_rounds` | Number of rounds the home team has completed before this match (i.e. `round_number − 1`). Acts as a season-progress proxy; early-season features are less reliable due to small sample sizes. |
+<table>
+<thead><tr><th>Feature</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>days_rest_diff</code></td><td><code>home_days_rest − away_days_rest</code>. Positive means the home team has had more recovery time. Default 7 days for the first game of the season.</td></tr>
+<tr><td><code>completed_rounds</code></td><td>Number of rounds the home team has completed before this match (i.e. <code>round_number − 1</code>). Acts as a season-progress proxy; early-season features are less reliable due to small sample sizes.</td></tr>
+</tbody>
+</table>
 
 ### Target Variable
 
-| Column | Description |
-|--------|-------------|
-| `home_margin` | Final score margin from the home team's perspective (`home_score − away_score`). This is what the model predicts; win probability is derived from the predicted margin via a calibrated sigmoid. |
+<table>
+<thead><tr><th>Column</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>home_margin</code></td><td>Final score margin from the home team's perspective (<code>home_score − away_score</code>). This is what the model predicts; win probability is derived from the predicted margin via a calibrated sigmoid.</td></tr>
+</tbody>
+</table>
 
 ---
 
