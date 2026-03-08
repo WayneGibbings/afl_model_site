@@ -155,6 +155,11 @@ export default function ChatPage() {
         <p className="mt-2 text-sm text-[var(--muted)]">
           Ask natural language questions about tips, confidence, ladders, and model performance.
         </p>
+        <ul className="mt-3 space-y-0.5 text-xs text-[var(--muted)]">
+          <li>Questions may take up to a minute to return an answer.</li>
+          <li>Refreshing the page clears the chat.</li>
+          <li>Game data goes back to 2003.</li>
+        </ul>
       </header>
 
       <section className="card overflow-hidden">
