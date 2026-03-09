@@ -62,10 +62,11 @@ export function useLiveSiteSnapshot(initialSnapshot: SiteSnapshot): {
     return cached ? pickNewest(cached, initialSnapshot) : initialSnapshot;
   });
 
-  const [isLoading, setIsLoading] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return readCachedSnapshot() === null;
-  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (readCachedSnapshot() === null) setIsLoading(true);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();

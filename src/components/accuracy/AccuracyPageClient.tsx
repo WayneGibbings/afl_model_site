@@ -24,7 +24,7 @@ export function AccuracyPageClient({ initialSnapshot }: AccuracyPageClientProps)
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
           label="Tips Correct"
-          value={isLoading ? "—" : `${data.tips_correct} / ${data.total_tips}`}
+          value={isLoading ? null : `${data.tips_correct} / ${data.total_tips}`}
           accent={{ bar: "var(--brand)", badge: "rgba(26, 122, 138, 0.1)", text: "var(--brand)" }}
           icon={
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -35,7 +35,7 @@ export function AccuracyPageClient({ initialSnapshot }: AccuracyPageClientProps)
         />
         <StatCard
           label="Accuracy"
-          value={isLoading ? "—" : `${data.accuracy_pct.toFixed(1)}%`}
+          value={isLoading ? null : `${data.accuracy_pct.toFixed(1)}%`}
           accent={{ bar: "var(--success)", badge: "rgba(22, 163, 74, 0.1)", text: "var(--success)" }}
           icon={
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -45,7 +45,7 @@ export function AccuracyPageClient({ initialSnapshot }: AccuracyPageClientProps)
         />
         <StatCard
           label="MAE"
-          value={isLoading ? "—" : data.mae.toFixed(1)}
+          value={isLoading ? null : data.mae.toFixed(1)}
           infoText="Mean Absolute Error. Lower is better. It is the average gap between the predicted margin and the actual final margin."
           accent={{ bar: "var(--gold)", badge: "var(--gold-light)", text: "var(--gold-dark)" }}
           icon={
@@ -57,7 +57,7 @@ export function AccuracyPageClient({ initialSnapshot }: AccuracyPageClientProps)
         />
         <StatCard
           label="Bits"
-          value={isLoading ? "—" : data.bits.toFixed(2)}
+          value={isLoading ? null : data.bits.toFixed(2)}
           infoText="Bits score measures how much confidence the model assigned to the actual winner. Higher is better, with stronger credit for being confidently right."
           accent={{ bar: "var(--brand-dark)", badge: "rgba(15, 58, 68, 0.08)", text: "var(--brand-dark)" }}
           icon={
@@ -114,7 +114,7 @@ function StatCard({
   icon,
 }: {
   label: string;
-  value: string;
+  value: string | null;
   infoText?: string;
   accent: { bar: string; badge: string; text: string };
   icon: React.ReactNode;
@@ -129,9 +129,13 @@ function StatCard({
             {label}
             {infoText ? info.button : null}
           </p>
-          <p className="text-xl sm:text-2xl font-bold tracking-tight" style={{ color: "var(--foreground)" }}>
-            {value}
-          </p>
+          {value === null ? (
+            <span className="mt-1 block h-7 w-20 rounded-md animate-pulse" style={{ background: "var(--border)" }} />
+          ) : (
+            <p className="text-xl sm:text-2xl font-bold tracking-tight" style={{ color: "var(--foreground)" }}>
+              {value}
+            </p>
+          )}
         </div>
         <span
           className="w-9 h-9 rounded-lg flex items-center justify-center"
