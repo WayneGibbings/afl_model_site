@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { teams, type TeamKey } from "@/config/teams";
-import { formatMarginPoints, formatPredictionDate, getPredictionChronologicalValue } from "@/lib/format";
+import { formatMarginPoints, formatPredictionDate, getPredictionChronologicalValue, getDefaultRound } from "@/lib/format";
 import type { UpcomingPrediction } from "@/lib/types";
 import { TipResultBadge } from "@/components/shared/TipResultBadge";
 import { RoundFilter } from "./RoundFilter";
@@ -30,7 +30,7 @@ export function TipsTable({ predictions, season }: TipsTableProps) {
     return opts;
   }, [predictions]);
 
-  const [selectedRound, setSelectedRound] = useState<string>(() => predictions[0]?.round ?? "");
+  const [selectedRound, setSelectedRound] = useState<string>(() => getDefaultRound(predictions));
   const [browserTimeZone, setBrowserTimeZone] = useState<string | null>(null);
 
   useEffect(() => {

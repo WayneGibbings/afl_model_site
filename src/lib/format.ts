@@ -83,3 +83,42 @@ export function toTwoDp(value: number): string {
 export function formatMarginPoints(margin: number): string {
   return `${Math.floor(Math.abs(margin))} points`;
 }
+
+/**
+ * Returns the round that should be selected by default based on the current date.
+ *
+ * The AFL week runs Tuesday midnight → Monday night. From Tuesday midnight each
+ * week we show the round whose games fall in that upcoming weekend, until the
+ * following Tuesday midnight when we advance to the next round.
+ */
+export function getDefaultRound(predictions: UpcomingPrediction[]): string {
+  if (predictions.length === 0) return "";
+
+  // Most recent Tuesday at 00:00 local time = start of current AFL week
+  const now = new Date();
+  const daysSinceTuesday = (now.getDay() - 2 + 7) % 7; // 0 on Tue, 1 on Wed, …, 6 on Mon
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - daysSinceTuesday);
+  weekStart.setHours(0, 0, 0, 0);
+  const weekStartMs = weekStart.getTime();
+
+  // Earliest kickoff timestamp per round
+  const roundEarliestMs = new Map<string, number>();
+  for (const p of predictions) {
+    const ts = getPredictionChronologicalValue(p);
+    const existing = roundEarliestMs.get(p.round);
+    if (existing === undefined || ts < existing) {
+      roundEarliestMs.set(p.round, ts);
+    }
+  }
+
+  // Sort rounds chronologically by earliest game
+  const sorted = [...roundEarliestMs.entries()].sort(([, a], [, b]) => a - b);
+
+  // First round whose earliest game falls at or after last Tuesday midnight
+  const current = sorted.find(([, ts]) => ts >= weekStartMs);
+  if (current) return current[0];
+
+  // All rounds are in the past — show the most recent one
+  return sorted[sorted.length - 1]?.[0] ?? predictions[0].round;
+}
