@@ -70,3 +70,12 @@ jobs:
         env:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           FIREBASE_FUNCTIONS_REGION: ${{ vars.FIREBASE_FUNCTIONS_REGION || 'australia-southeast1' }}
+
+      - name: Refresh live site data cache
+        run: |
+          curl -fsSL -X POST \
+            -H "x-site-refresh-token: $SITE_REFRESH_TOKEN" \
+            "https://${FIREBASE_PROJECT_ID}.web.app/api/site-data/refresh"
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          SITE_REFRESH_TOKEN: ${{ secrets.SITE_REFRESH_TOKEN }}
