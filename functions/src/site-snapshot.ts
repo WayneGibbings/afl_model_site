@@ -490,7 +490,7 @@ export const siteSnapshotQueries = {
         CAST(SUM(correct) AS INT)                            AS tips_correct,
         ROUND(SUM(correct) * 100.0 / NULLIF(COUNT(*), 0), 1) AS accuracy_pct,
         ROUND(AVG(margin_error), 1)                          AS mae,
-        ROUND(AVG(bits_contribution), 3)                     AS bits
+        ROUND(SUM(bits_contribution), 3)                     AS bits
       FROM completed
     )
     SELECT

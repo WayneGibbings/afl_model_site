@@ -58,13 +58,13 @@ For each game, the bits score is calculated as:
 - **Incorrect tip:** `1 + log₂(1 − p)` — where *1 − p* is the probability assigned to the losing team.
 - **Draw:** `1 + ½ · log₂(p · (1 − p))`
 
-A neutral prediction of exactly 50% yields **0 bits** — neither gaining nor losing information. Confidently tipping the winner yields up to **+1 bit**, while confidently tipping the wrong team yields large negative scores. Over a season the average bits per game is reported; higher is better.
+A neutral prediction of exactly 50% yields **0 bits** — neither gaining nor losing information. Confidently tipping the winner yields up to **+1 bit**, while confidently tipping the wrong team yields large negative scores. Over a season the bits are summed into a cumulative total; higher is better.
 
 ### Performance Targets
 
 - Mean Absolute Error (MAE) below 28 points.
 - Tipping accuracy above 67%.
-- Average Bits above 0.
+- Total Bits above 0 (each game at 50% confidence contributes exactly 0).
 - Ongoing benchmarking against the [Squiggle](https://squiggle.com.au/) tipping leaderboard.
 
 ## Feature Glossary
