@@ -443,9 +443,9 @@ export const siteSnapshotQueries = {
         ABS(p.predicted_margin - m.margin)                              AS margin_error,
         CASE
           WHEN m.winner = m.home_team
-            THEN LOG(2, GREATEST(p.home_win_probability,       1e-6))
+            THEN p.home_win_probability - 0.5
           WHEN m.winner = m.away_team
-            THEN LOG(2, GREATEST(1.0 - p.home_win_probability, 1e-6))
+            THEN (1.0 - p.home_win_probability) - 0.5
           ELSE 0.0
         END                                                             AS bits_contribution,
         CAST(p.date AS STRING)                                          AS game_date,
