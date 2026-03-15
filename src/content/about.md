@@ -46,10 +46,25 @@ Some inputs were intentionally left out of the model:
 - **Individual player statistics**: team-level aggregates are more robust and available earlier; player-level inputs are highly sensitive to late team-sheet changes.
 - **Weather data**: tested, but noisy with low marginal predictive lift relative to model complexity.
 
-## Performance Targets
+## Performance Metrics
+
+### Bits
+
+Bits is a probabilistic scoring metric borrowed from information theory, used by the [Monash Probabilistic Footy Tipping Competition](https://probabilistic-footy.monash.edu/~footy/about.shtml#info) to evaluate the quality of probabilistic forecasts.
+
+For each game, the bits score is calculated as:
+
+- **Correct tip:** `1 + log₂(p)` — where *p* is the probability assigned to the winning team.
+- **Incorrect tip:** `1 + log₂(1 − p)` — where *1 − p* is the probability assigned to the losing team.
+- **Draw:** `1 + ½ · log₂(p · (1 − p))`
+
+A neutral prediction of exactly 50% yields **0 bits** — neither gaining nor losing information. Confidently tipping the winner yields up to **+1 bit**, while confidently tipping the wrong team yields large negative scores. Over a season the average bits per game is reported; higher is better.
+
+### Performance Targets
 
 - Mean Absolute Error (MAE) below 28 points.
 - Tipping accuracy above 67%.
+- Average Bits above 0.
 - Ongoing benchmarking against the [Squiggle](https://squiggle.com.au/) tipping leaderboard.
 
 ## Feature Glossary
@@ -119,6 +134,7 @@ Differentials (home − away) of EWMA game-style statistics.
 ## Acknowledgements
 
 - [Squiggle](https://squiggle.com.au/) community and API.
+- [Monash Probabilistic Footy Tipping Competition](https://probabilistic-footy.monash.edu/~footy/about.shtml#info) — source of the Bits scoring methodology used on this site.
 - Ryall, R. & Bedford, A. (2010). *An optimized ratings-based model for forecasting Australian Rules football*. International Journal of Forecasting, 26(3), 511-517.
 - [Betfair AFL modelling tutorial series](https://betfair-datascientists.github.io/modelling/AFLmodellingPython/).
 
