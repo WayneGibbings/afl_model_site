@@ -124,6 +124,18 @@ export function TipsTable({ predictions, season }: TipsTableProps) {
 
 /* ---------- Match Card ---------- */
 
+function calcBitsContribution(prediction: UpcomingPrediction): number | null {
+  if (!prediction.actual_winner) return null;
+  const p = prediction.home_win_probability;
+  if (prediction.actual_winner === prediction.home_team) {
+    return 1 + Math.log2(p);
+  } else if (prediction.actual_winner === prediction.away_team) {
+    return 1 + Math.log2(1 - p);
+  } else {
+    return 1 + 0.5 * Math.log2(p * (1 - p));
+  }
+}
+
 function MatchCard({
   prediction,
   browserTimeZone,
@@ -135,6 +147,7 @@ function MatchCard({
   const winProb = isHomeTip ? prediction.home_win_probability : prediction.away_win_probability;
   const winPct = Math.round(winProb * 100);
   const isCompleted = prediction.actual_winner != null;
+  const bits = calcBitsContribution(prediction);
 
   return (
     <div className="match-card card overflow-clip">
@@ -278,7 +291,15 @@ function MatchCard({
                 {prediction.actual_margin != null ? formatMarginPoints(prediction.actual_margin) : "Final margin n/a"}
               </p>
               <p className="text-xs tabular-nums" style={{ color: "var(--muted)" }}>
-                {prediction.margin_error != null ? `MAE ${prediction.margin_error.toFixed(1)}` : "\u00A0"}
+                {prediction.margin_error != null ? `Margin error ${prediction.margin_error.toFixed(1)}` : "\u00A0"}
+              </p>
+              <p
+                className="text-xs font-semibold tabular-nums"
+                style={{
+                  color: bits == null ? "transparent" : bits >= 0 ? "var(--brand)" : "#dc2626",
+                }}
+              >
+                {bits != null ? `${bits >= 0 ? "+" : ""}${bits.toFixed(2)} bits` : "\u00A0"}
               </p>
             </div>
           </div>
