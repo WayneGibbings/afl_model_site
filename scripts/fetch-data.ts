@@ -96,12 +96,17 @@ async function main() {
     throw new Error("Could not determine current season from gold_predictions");
   }
 
-  const [rawUpcoming, rawLadderPreseason, rawLadderCurrent, accuracyRows] = await Promise.all([
+  const [rawUpcoming, rawLadderPreseason, rawLadderCurrent, accuracyRows, lastUpdatedRows] = await Promise.all([
     executeStatement(siteSnapshotQueries.upcomingPredictions(targetSeason)),
     executeStatement(siteSnapshotQueries.ladderPreseason(targetSeason)),
     executeStatement(siteSnapshotQueries.ladderCurrent(targetSeason)),
     executeStatement(siteSnapshotQueries.accuracy(targetSeason)),
+    executeStatement(siteSnapshotQueries.predictionsLastUpdated),
   ]);
+
+  const predictionsLastUpdated = typeof lastUpdatedRows[0]?.last_updated === "string"
+    ? lastUpdatedRows[0].last_updated
+    : null;
 
   const payload = buildSiteSnapshotPayload({
     season: targetSeason,
@@ -115,7 +120,7 @@ async function main() {
     console.warn("Accuracy query returned no rows. Writing pre-season default accuracy payload.");
   }
 
-  const snapshot = createSiteSnapshot(payload);
+  const snapshot = createSiteSnapshot(payload, new Date().toISOString(), predictionsLastUpdated);
   const outputDir = path.join(process.cwd(), "src/data");
   await mkdir(outputDir, { recursive: true });
 

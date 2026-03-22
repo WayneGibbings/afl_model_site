@@ -3,7 +3,7 @@ import { loadSiteSnapshot } from "@/lib/data";
 
 export async function Footer() {
   const snapshot = await loadSiteSnapshot();
-  const date = new Date(snapshot.generatedAt);
+  const date = new Date(snapshot.predictionsLastUpdated ?? snapshot.generatedAt);
   const melbourneOptions = { timeZone: "Australia/Melbourne" } as const;
   const updatedAt = date.toLocaleString("en-AU", {
     ...melbourneOptions,

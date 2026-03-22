@@ -169,6 +169,7 @@ const siteSnapshotPayloadSchema = z.object({
 const siteSnapshotSchema = siteSnapshotPayloadSchema.extend({
   snapshotVersion: z.string().min(1),
   generatedAt: z.string().min(1),
+  predictionsLastUpdated: z.string().nullable().optional(),
 });
 
 export interface SiteSnapshotPayload {
@@ -182,6 +183,7 @@ export interface SiteSnapshotPayload {
 export interface SiteSnapshot extends SiteSnapshotPayload {
   snapshotVersion: string;
   generatedAt: string;
+  predictionsLastUpdated?: string | null;
 }
 
 export interface RawSiteSnapshotInput {
@@ -194,6 +196,7 @@ export interface RawSiteSnapshotInput {
 
 export const siteSnapshotQueries = {
   currentSeason: `SELECT MAX(season) AS season FROM dev_afl.afl_tipping.gold_predictions LIMIT 1`,
+  predictionsLastUpdated: `SELECT MAX(predicted_at) AS last_updated FROM dev_afl.afl_tipping.gold_predictions`,
   upcomingPredictions: (season: number) => `
     WITH season_predictions AS (
       SELECT
@@ -623,13 +626,14 @@ export function hashSiteSnapshotPayload(payload: SiteSnapshotPayload): string {
   return createHash("sha256").update(JSON.stringify(normalized)).digest("hex");
 }
 
-export function createSiteSnapshot(payload: SiteSnapshotPayload, generatedAt = new Date().toISOString()): SiteSnapshot {
+export function createSiteSnapshot(payload: SiteSnapshotPayload, generatedAt = new Date().toISOString(), predictionsLastUpdated?: string | null): SiteSnapshot {
   const normalized = siteSnapshotPayloadSchema.parse(payload);
 
   return {
     ...normalized,
     snapshotVersion: hashSiteSnapshotPayload(normalized),
     generatedAt,
+    predictionsLastUpdated: predictionsLastUpdated ?? null,
   };
 }
 
