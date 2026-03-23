@@ -80,7 +80,7 @@ export function AccuracyPageClient({ initialSnapshot }: AccuracyPageClientProps)
             </tr>
           </thead>
           <tbody>
-            {data.by_round.map((round) => (
+            {data.by_round.slice().reverse().map((round) => (
               <tr key={round.round_label}>
                 <td className="px-4 py-3 font-semibold" style={{ color: "var(--foreground)" }}>
                   {round.round_label}
