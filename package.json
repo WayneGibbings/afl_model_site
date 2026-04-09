@@ -15,8 +15,8 @@
   "dependencies": {
     "gray-matter": "^4.0.3",
     "next": "^16.2.1",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "react-markdown": "^10.1.0",
     "remark": "^15.0.1",
     "remark-breaks": "^4.0.0",
@@ -26,15 +26,15 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.2",
     "@tailwindcss/typography": "^0.5.19",
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.5.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/coverage-v8": "^4.1.2",
     "eslint": "^10.1.0",
     "eslint-config-next": "^16.2.1",
     "tailwindcss": "^4.2.2",
     "tsx": "^4.21.0",
-    "typescript": "^5",
-    "vitest": "^4.0.18"
+    "typescript": "^6",
+    "vitest": "^4.1.2"
   }
 }
