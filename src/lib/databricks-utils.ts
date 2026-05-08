@@ -85,6 +85,10 @@ export function mapTeamKey(value: unknown, fieldName: string, nullable = false):
     throw new Error(`Invalid team value for field ${fieldName}: expected string`);
   }
 
+  if (value === "Draw") {
+    return null;
+  }
+
   if (teamKeys.includes(value as TeamKey)) {
     return value as TeamKey;
   }
