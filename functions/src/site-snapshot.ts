@@ -42,7 +42,7 @@ export interface AccuracyGame {
   home_team: TeamKey;
   away_team: TeamKey;
   predicted_winner: TeamKey;
-  actual_winner: TeamKey;
+  actual_winner: TeamKey | null;
   correct: boolean;
 }
 
@@ -99,7 +99,7 @@ const accuracyGameSchema = z.object({
   home_team: teamKeySchema,
   away_team: teamKeySchema,
   predicted_winner: teamKeySchema,
-  actual_winner: teamKeySchema,
+  actual_winner: teamKeySchema.nullable(),
   correct: z.boolean(),
 });
 

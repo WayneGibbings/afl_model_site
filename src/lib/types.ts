@@ -40,7 +40,7 @@ export interface AccuracyGame {
   home_team: TeamKey;
   away_team: TeamKey;
   predicted_winner: TeamKey;
-  actual_winner: TeamKey;
+  actual_winner: TeamKey | null;
   correct: boolean;
 }
 
